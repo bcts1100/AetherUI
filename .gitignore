@@ -1,0 +1,15 @@
+/build*/
+/out/
+/package/
+/profile/
+/.vs/
+/.superpowers/
+node_modules/
+*.user
+*.log
+*.exe
+*.pdb
+*.ilk
+*.obj
+*.lib
+.DS_Store

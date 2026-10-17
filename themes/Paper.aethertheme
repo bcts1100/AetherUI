@@ -1,0 +1,11 @@
+[AetherTheme]
+version=1
+[theme]
+name=Paper
+background=EEE9E4
+surface=FCF9F5
+raised=DFD7CF
+foreground=292431
+muted=635869
+accent=B44A23
+radius=16

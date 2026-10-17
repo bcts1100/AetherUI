@@ -1,0 +1,130 @@
+[
+  {
+    "pack": "yaru",
+    "repo": "ubuntu/yaru",
+    "revision": "7f18973e05607c609c4b972f0dd9bff36fa2a13e",
+    "path": "icons/Yaru/256x256/apps/webbrowser-app.png",
+    "output": "chrome.png",
+    "sha256": "5331e04b2d9c66fe4d4f37f9ce733a9d3a81a223af4542569b99e74160d13234"
+  },
+  {
+    "pack": "yaru",
+    "repo": "ubuntu/yaru",
+    "revision": "7f18973e05607c609c4b972f0dd9bff36fa2a13e",
+    "path": "icons/Yaru/256x256/apps/webbrowser-app.png",
+    "output": "firefox.png",
+    "sha256": "5331e04b2d9c66fe4d4f37f9ce733a9d3a81a223af4542569b99e74160d13234"
+  },
+  {
+    "pack": "yaru",
+    "repo": "ubuntu/yaru",
+    "revision": "7f18973e05607c609c4b972f0dd9bff36fa2a13e",
+    "path": "icons/Yaru/256x256/apps/webbrowser-app.png",
+    "output": "edge.png",
+    "sha256": "5331e04b2d9c66fe4d4f37f9ce733a9d3a81a223af4542569b99e74160d13234"
+  },
+  {
+    "pack": "yaru",
+    "repo": "ubuntu/yaru",
+    "revision": "7f18973e05607c609c4b972f0dd9bff36fa2a13e",
+    "path": "icons/Yaru/256x256/apps/webbrowser-app.png",
+    "output": "brave.png",
+    "sha256": "5331e04b2d9c66fe4d4f37f9ce733a9d3a81a223af4542569b99e74160d13234"
+  },
+  {
+    "pack": "yaru",
+    "repo": "ubuntu/yaru",
+    "revision": "7f18973e05607c609c4b972f0dd9bff36fa2a13e",
+    "path": "icons/Yaru/256x256/apps/terminal-app.png",
+    "output": "terminal.png",
+    "sha256": "99a6e812294961e994564cc4b357b729da6160d7fd7362d4c90c7aea8e6b9899"
+  },
+  {
+    "pack": "yaru",
+    "repo": "ubuntu/yaru",
+    "revision": "7f18973e05607c609c4b972f0dd9bff36fa2a13e",
+    "path": "icons/Yaru/256x256/apps/filemanager-app.png",
+    "output": "files.png",
+    "sha256": "ea95b4cb4aadffd2e433a3e4e9eda8693be0274ed01c0b58a3e2da73d2a6fd5d"
+  },
+  {
+    "pack": "yaru",
+    "repo": "ubuntu/yaru",
+    "revision": "7f18973e05607c609c4b972f0dd9bff36fa2a13e",
+    "path": "icons/Yaru/256x256/apps/system-settings.png",
+    "output": "settings.png",
+    "sha256": "8179a5ffc1a86e7311e45d74fa9a174f92e63f0a9e6ba4d912d3c26d8264f519"
+  },
+  {
+    "pack": "yaru",
+    "repo": "ubuntu/yaru",
+    "revision": "7f18973e05607c609c4b972f0dd9bff36fa2a13e",
+    "path": "icons/Yaru/256x256/apps/software-store.png",
+    "output": "store.png",
+    "sha256": "c087b5feefee72b43701f2e6fb07e01c39f164c00375c3ac40f1ff31497e7622"
+  },
+  {
+    "pack": "yaru",
+    "repo": "ubuntu/yaru",
+    "revision": "7f18973e05607c609c4b972f0dd9bff36fa2a13e",
+    "path": "icons/Yaru/256x256/apps/accessories-text-editor.png",
+    "output": "notepad.png",
+    "sha256": "a8c595a128da2417548e254f53dff209c44af69bee997842d794131f15cb149e"
+  },
+  {
+    "pack": "yaru",
+    "repo": "ubuntu/yaru",
+    "revision": "7f18973e05607c609c4b972f0dd9bff36fa2a13e",
+    "path": "icons/Yaru/256x256/apps/libreoffice-writer.png",
+    "output": "word.png",
+    "sha256": "f9b908d4ee191fd8b7e804840a596b2a1d063b154c2850279bf01a172a936ca7"
+  },
+  {
+    "pack": "yaru",
+    "repo": "ubuntu/yaru",
+    "revision": "7f18973e05607c609c4b972f0dd9bff36fa2a13e",
+    "path": "icons/Yaru/256x256/apps/libreoffice-calc.png",
+    "output": "excel.png",
+    "sha256": "4b01cc535274470af6fc5ff32be52a81dba660eada8005459c29642e613ddf40"
+  },
+  {
+    "pack": "yaru",
+    "repo": "ubuntu/yaru",
+    "revision": "7f18973e05607c609c4b972f0dd9bff36fa2a13e",
+    "path": "icons/Yaru/256x256/apps/libreoffice-impress.png",
+    "output": "powerpoint.png",
+    "sha256": "7d43fd11f2e2cdca3174536b7c1fafd3e05218243beeb36e702c82fabe727f1e"
+  },
+  {
+    "pack": "yaru",
+    "repo": "ubuntu/yaru",
+    "revision": "7f18973e05607c609c4b972f0dd9bff36fa2a13e",
+    "path": "icons/Yaru/256x256/apps/calculator-app.png",
+    "output": "calculator.png",
+    "sha256": "40b6a487ecb9c9632bd5362fa68e321addc27082cff755e6f4fb1356f360f925"
+  },
+  {
+    "pack": "yaru",
+    "repo": "ubuntu/yaru",
+    "revision": "7f18973e05607c609c4b972f0dd9bff36fa2a13e",
+    "path": "icons/Yaru/256x256/apps/org.gnome.Loupe.png",
+    "output": "photos.png",
+    "sha256": "e64149094436f17b39400b0ac03771cdaa4ac2d878cc0c6ebd52760ee7d4bb83"
+  },
+  {
+    "pack": "yaru",
+    "repo": "ubuntu/yaru",
+    "revision": "7f18973e05607c609c4b972f0dd9bff36fa2a13e",
+    "path": "icons/Yaru/256x256/apps/music-app.png",
+    "output": "music.png",
+    "sha256": "ef0213f91c26b8e5470eb9153674f2d03bbe44d19507a49716f4dd8af903be29"
+  },
+  {
+    "pack": "yaru",
+    "repo": "ubuntu/yaru",
+    "revision": "7f18973e05607c609c4b972f0dd9bff36fa2a13e",
+    "path": "icons/Yaru/256x256/apps/mediaplayer-app.png",
+    "output": "video.png",
+    "sha256": "e6869763679cc24ba92fcf85c46efca304ae2eb0f9568d42ed65cfc47f9c71ba"
+  }
+]

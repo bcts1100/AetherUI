@@ -1,0 +1,3 @@
+Source: https://github.com/vinceliuice/WhiteSur-icon-theme
+Pinned revision: 73d8040da51a9ed74e47c7366e7e9ff437601a5c
+Rasterized to 128px PNG with sharp/libvips for Aether. Unmodified corresponding SVG sources included where applicable. Original authors and license in LICENSE.txt.

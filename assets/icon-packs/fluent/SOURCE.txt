@@ -1,0 +1,3 @@
+Source: https://github.com/vinceliuice/Fluent-icon-theme
+Pinned revision: c8a244f571ef8fb47812bdc9dbce76546cedce69
+Rasterized to 128px PNG with sharp/libvips for Aether. Unmodified corresponding SVG sources included where applicable. Original authors and license in LICENSE.txt.

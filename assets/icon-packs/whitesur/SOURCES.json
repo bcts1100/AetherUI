@@ -1,0 +1,234 @@
+[
+  {
+    "pack": "whitesur",
+    "repo": "vinceliuice/WhiteSur-icon-theme",
+    "revision": "73d8040da51a9ed74e47c7366e7e9ff437601a5c",
+    "path": "src/apps/scalable/google-chrome.svg",
+    "output": "chrome.png",
+    "sha256": "1441d980a31836f429da949d4037f3035cb6be0d9c6864770b12e4e08ab21b98"
+  },
+  {
+    "pack": "whitesur",
+    "repo": "vinceliuice/WhiteSur-icon-theme",
+    "revision": "73d8040da51a9ed74e47c7366e7e9ff437601a5c",
+    "path": "src/apps/scalable/firefox.svg",
+    "output": "firefox.png",
+    "sha256": "6bd72b2f1d727acd73fed90d1f7b36949c37a0bfbed4203a1354d75ca8beb7ae"
+  },
+  {
+    "pack": "whitesur",
+    "repo": "vinceliuice/WhiteSur-icon-theme",
+    "revision": "73d8040da51a9ed74e47c7366e7e9ff437601a5c",
+    "path": "src/apps/scalable/microsoft-edge.svg",
+    "output": "edge.png",
+    "sha256": "7b073284589c08f3537396eff5d57f3b266b8131608b10c0ebf0cf87a7d4a749"
+  },
+  {
+    "pack": "whitesur",
+    "repo": "vinceliuice/WhiteSur-icon-theme",
+    "revision": "73d8040da51a9ed74e47c7366e7e9ff437601a5c",
+    "path": "src/apps/scalable/brave.svg",
+    "output": "brave.png",
+    "sha256": "480873b0e25a5c4242ae152d21e859532b7e6b1b1f638e9abd857d9e97024448"
+  },
+  {
+    "pack": "whitesur",
+    "repo": "vinceliuice/WhiteSur-icon-theme",
+    "revision": "73d8040da51a9ed74e47c7366e7e9ff437601a5c",
+    "path": "src/apps/scalable/visual-studio-code.svg",
+    "output": "code.png",
+    "sha256": "bbc3a39c4cbbfb0597407f53e26ef3cf2265b6e98d709763062645133e01a7bd"
+  },
+  {
+    "pack": "whitesur",
+    "repo": "vinceliuice/WhiteSur-icon-theme",
+    "revision": "73d8040da51a9ed74e47c7366e7e9ff437601a5c",
+    "path": "alternative/apps/scalable/terminal.svg",
+    "output": "terminal.png",
+    "sha256": "3dd0c1f0a96dc01e5ca0c81b9f9bfffb8a8b9cbd42bf8db308fc555a88a1e9ae"
+  },
+  {
+    "pack": "whitesur",
+    "repo": "vinceliuice/WhiteSur-icon-theme",
+    "revision": "73d8040da51a9ed74e47c7366e7e9ff437601a5c",
+    "path": "alternative/apps/scalable/file-manager.svg",
+    "output": "files.png",
+    "sha256": "54826075ed97ad82fb728a77c4f20247e2dea31d2b09d480b23c3f5a04728f46"
+  },
+  {
+    "pack": "whitesur",
+    "repo": "vinceliuice/WhiteSur-icon-theme",
+    "revision": "73d8040da51a9ed74e47c7366e7e9ff437601a5c",
+    "path": "src/apps/scalable/preferences-system.svg",
+    "output": "settings.png",
+    "sha256": "b22adc57ae8ecb53dce7c0725eb4ea44d843668f5daf29b515bec6d31cef520c"
+  },
+  {
+    "pack": "whitesur",
+    "repo": "vinceliuice/WhiteSur-icon-theme",
+    "revision": "73d8040da51a9ed74e47c7366e7e9ff437601a5c",
+    "path": "alternative/apps/scalable/softwarecenter.svg",
+    "output": "store.png",
+    "sha256": "386c43207bee1ff6c4cb416a6a564514614a95a5880d1241f7212aa95870b1fd"
+  },
+  {
+    "pack": "whitesur",
+    "repo": "vinceliuice/WhiteSur-icon-theme",
+    "revision": "73d8040da51a9ed74e47c7366e7e9ff437601a5c",
+    "path": "src/apps/scalable/spotify-client.svg",
+    "output": "spotify.png",
+    "sha256": "766af2478dfe5e49d5703cc83c23e599e30d8094da918b65b89a892b5e622bae"
+  },
+  {
+    "pack": "whitesur",
+    "repo": "vinceliuice/WhiteSur-icon-theme",
+    "revision": "73d8040da51a9ed74e47c7366e7e9ff437601a5c",
+    "path": "src/apps/scalable/steam.svg",
+    "output": "steam.png",
+    "sha256": "4d829aaadbe3dfd08c27cebba415e2a2792a40a409a2156e2bee3cc1b563a84c"
+  },
+  {
+    "pack": "whitesur",
+    "repo": "vinceliuice/WhiteSur-icon-theme",
+    "revision": "73d8040da51a9ed74e47c7366e7e9ff437601a5c",
+    "path": "src/apps/scalable/discord.svg",
+    "output": "discord.png",
+    "sha256": "24c033d797175fa95cee283011acd8568de1db5d48d11f763c9a91a1c09b9927"
+  },
+  {
+    "pack": "whitesur",
+    "repo": "vinceliuice/WhiteSur-icon-theme",
+    "revision": "73d8040da51a9ed74e47c7366e7e9ff437601a5c",
+    "path": "src/apps/scalable/telegram.svg",
+    "output": "telegram.png",
+    "sha256": "858fcb6061fc7b54c07d8bf8e9ad9d9b4887429cfcc47e435f799311fe8ff7c0"
+  },
+  {
+    "pack": "whitesur",
+    "repo": "vinceliuice/WhiteSur-icon-theme",
+    "revision": "73d8040da51a9ed74e47c7366e7e9ff437601a5c",
+    "path": "src/apps/scalable/vlc.svg",
+    "output": "vlc.png",
+    "sha256": "e9284441a297da320dd2851eca331c1abcc47e77adb3a56554fe75b57e2162be"
+  },
+  {
+    "pack": "whitesur",
+    "repo": "vinceliuice/WhiteSur-icon-theme",
+    "revision": "73d8040da51a9ed74e47c7366e7e9ff437601a5c",
+    "path": "src/apps/scalable/obs.svg",
+    "output": "obs.png",
+    "sha256": "0a157baa6788357183024e466ae1da656802a44ef399663edcd8bbd89b5ca36b"
+  },
+  {
+    "pack": "whitesur",
+    "repo": "vinceliuice/WhiteSur-icon-theme",
+    "revision": "73d8040da51a9ed74e47c7366e7e9ff437601a5c",
+    "path": "src/apps/scalable/blender.svg",
+    "output": "blender.png",
+    "sha256": "d56d68b3af0e4ae62ff5327cc7915f5c8339de29229be1876fd5bf2d9f92786f"
+  },
+  {
+    "pack": "whitesur",
+    "repo": "vinceliuice/WhiteSur-icon-theme",
+    "revision": "73d8040da51a9ed74e47c7366e7e9ff437601a5c",
+    "path": "src/apps/scalable/gimp.svg",
+    "output": "gimp.png",
+    "sha256": "c640711c404ac329c91e0e7789e277c01654a2c11d2684a8ce814a6a5aefb402"
+  },
+  {
+    "pack": "whitesur",
+    "repo": "vinceliuice/WhiteSur-icon-theme",
+    "revision": "73d8040da51a9ed74e47c7366e7e9ff437601a5c",
+    "path": "src/apps/scalable/inkscape.svg",
+    "output": "inkscape.png",
+    "sha256": "1e8f3c30755d84f110ebe001a149dee55e1eeaa119b5532a474680d8684384d7"
+  },
+  {
+    "pack": "whitesur",
+    "repo": "vinceliuice/WhiteSur-icon-theme",
+    "revision": "73d8040da51a9ed74e47c7366e7e9ff437601a5c",
+    "path": "src/apps/scalable/accessories-text-editor.svg",
+    "output": "notepad.png",
+    "sha256": "fe372672e576fa999faeee41d490dc2c9f1336bff7e98bfd2b90113a512a2c79"
+  },
+  {
+    "pack": "whitesur",
+    "repo": "vinceliuice/WhiteSur-icon-theme",
+    "revision": "73d8040da51a9ed74e47c7366e7e9ff437601a5c",
+    "path": "src/apps/scalable/ms-word.svg",
+    "output": "word.png",
+    "sha256": "e7f6d25b4acb61518e6d0018bf64c8204b42d2e781fdbaf82dd4317ed98cd950"
+  },
+  {
+    "pack": "whitesur",
+    "repo": "vinceliuice/WhiteSur-icon-theme",
+    "revision": "73d8040da51a9ed74e47c7366e7e9ff437601a5c",
+    "path": "src/apps/scalable/ms-excel.svg",
+    "output": "excel.png",
+    "sha256": "2a9143060ef141ba86bee8d3bb5836aaafedeedd71653baa239fe8c156ea1145"
+  },
+  {
+    "pack": "whitesur",
+    "repo": "vinceliuice/WhiteSur-icon-theme",
+    "revision": "73d8040da51a9ed74e47c7366e7e9ff437601a5c",
+    "path": "src/apps/scalable/ms-powerpoint.svg",
+    "output": "powerpoint.png",
+    "sha256": "82ad56d35c096b320a7d5504e4fd14f29576553d757958aee9bf7a162ba44817"
+  },
+  {
+    "pack": "whitesur",
+    "repo": "vinceliuice/WhiteSur-icon-theme",
+    "revision": "73d8040da51a9ed74e47c7366e7e9ff437601a5c",
+    "path": "src/apps/scalable/ms-outlook.svg",
+    "output": "outlook.png",
+    "sha256": "6e0731fdd7cb6356135b2d49102709b120ff81c28509eb086385f50d3fbfd35d"
+  },
+  {
+    "pack": "whitesur",
+    "repo": "vinceliuice/WhiteSur-icon-theme",
+    "revision": "73d8040da51a9ed74e47c7366e7e9ff437601a5c",
+    "path": "src/apps/scalable/github-desktop.svg",
+    "output": "github.png",
+    "sha256": "ec42a2365bd2c6182d000df185be40fa9bcfb3ec3b8dbcc9f6062b5ab7052ebc"
+  },
+  {
+    "pack": "whitesur",
+    "repo": "vinceliuice/WhiteSur-icon-theme",
+    "revision": "73d8040da51a9ed74e47c7366e7e9ff437601a5c",
+    "path": "alternative/apps/scalable/calc.svg",
+    "output": "calculator.png",
+    "sha256": "2c5a32814c89951c6f07bd1c7d0a5e7f593db23d9329992e8548021890f56caa"
+  },
+  {
+    "pack": "whitesur",
+    "repo": "vinceliuice/WhiteSur-icon-theme",
+    "revision": "73d8040da51a9ed74e47c7366e7e9ff437601a5c",
+    "path": "alternative/apps/scalable/eog.svg",
+    "output": "photos.png",
+    "sha256": "d0646711a93e96daaa715ffa99e2a3a70c0bdfde051cacb4db170e672681045f"
+  },
+  {
+    "pack": "whitesur",
+    "repo": "vinceliuice/WhiteSur-icon-theme",
+    "revision": "73d8040da51a9ed74e47c7366e7e9ff437601a5c",
+    "path": "src/apps/scalable/Palette.svg",
+    "output": "paint.png",
+    "sha256": "1c808d23d437e59e003398de22bf0527cf071b6e7bb93cc6e6a16f4948c82779"
+  },
+  {
+    "pack": "whitesur",
+    "repo": "vinceliuice/WhiteSur-icon-theme",
+    "revision": "73d8040da51a9ed74e47c7366e7e9ff437601a5c",
+    "path": "src/apps/scalable/smplayer.svg",
+    "output": "music.png",
+    "sha256": "b4bd24c1637cb1fd9a3117e5cdc454281e55104bc8978828f3e4e7a1f9604275"
+  },
+  {
+    "pack": "whitesur",
+    "repo": "vinceliuice/WhiteSur-icon-theme",
+    "revision": "73d8040da51a9ed74e47c7366e7e9ff437601a5c",
+    "path": "src/apps/scalable/smplayer.svg",
+    "output": "video.png",
+    "sha256": "b4bd24c1637cb1fd9a3117e5cdc454281e55104bc8978828f3e4e7a1f9604275"
+  }
+]

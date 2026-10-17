@@ -1,0 +1,234 @@
+[
+  {
+    "pack": "qogir",
+    "repo": "vinceliuice/Qogir-icon-theme",
+    "revision": "c633057ba0d27a504b3255144071c9691ed0264a",
+    "path": "src/scalable/apps/google-chrome.svg",
+    "output": "chrome.png",
+    "sha256": "6d9b329cdba4e81a48d104a21d37d75864fe40c001fd9f65a7c91a7196e93daa"
+  },
+  {
+    "pack": "qogir",
+    "repo": "vinceliuice/Qogir-icon-theme",
+    "revision": "c633057ba0d27a504b3255144071c9691ed0264a",
+    "path": "src/scalable/apps/firefox.svg",
+    "output": "firefox.png",
+    "sha256": "d24c8bce5758ea2729ab1c4a89ec15c05651d0b2b45e628b6ae6d182d636c120"
+  },
+  {
+    "pack": "qogir",
+    "repo": "vinceliuice/Qogir-icon-theme",
+    "revision": "c633057ba0d27a504b3255144071c9691ed0264a",
+    "path": "src/scalable/apps/microsoft-edge.svg",
+    "output": "edge.png",
+    "sha256": "30f2d9ff029dd385c146a2afdf3617ab9f8530b169fabce9ac36d6577d5b3f3f"
+  },
+  {
+    "pack": "qogir",
+    "repo": "vinceliuice/Qogir-icon-theme",
+    "revision": "c633057ba0d27a504b3255144071c9691ed0264a",
+    "path": "src/scalable/apps/brave.svg",
+    "output": "brave.png",
+    "sha256": "30b8b4a6b10fff29a8bb4fe14cb94fdfe5308892f4cfbebc8a6904dc34048c2a"
+  },
+  {
+    "pack": "qogir",
+    "repo": "vinceliuice/Qogir-icon-theme",
+    "revision": "c633057ba0d27a504b3255144071c9691ed0264a",
+    "path": "src/scalable/apps/visualstudiocode.svg",
+    "output": "code.png",
+    "sha256": "1acb8a70feb918e7a6aa6cbd6469ee7ee8f57a84dcbd34a6053575e826d193bd"
+  },
+  {
+    "pack": "qogir",
+    "repo": "vinceliuice/Qogir-icon-theme",
+    "revision": "c633057ba0d27a504b3255144071c9691ed0264a",
+    "path": "src/scalable/apps/utilities-terminal.svg",
+    "output": "terminal.png",
+    "sha256": "0ee1007944a3628cfc5e869cee3939e198724962f32af5d3bec33e62685cabae"
+  },
+  {
+    "pack": "qogir",
+    "repo": "vinceliuice/Qogir-icon-theme",
+    "revision": "c633057ba0d27a504b3255144071c9691ed0264a",
+    "path": "src/32/apps/file-manager.svg",
+    "output": "files.png",
+    "sha256": "a3acc23b0bd7e8d24eec1e2cf5f0ee15e23a6045be151ec6a6e544cef93e7d8e"
+  },
+  {
+    "pack": "qogir",
+    "repo": "vinceliuice/Qogir-icon-theme",
+    "revision": "c633057ba0d27a504b3255144071c9691ed0264a",
+    "path": "src/scalable/apps/preferences-system.svg",
+    "output": "settings.png",
+    "sha256": "134f45aceee04ad067c40a45b6c8b2ec05635dbdc35ce1921d2948bd4a4589f8"
+  },
+  {
+    "pack": "qogir",
+    "repo": "vinceliuice/Qogir-icon-theme",
+    "revision": "c633057ba0d27a504b3255144071c9691ed0264a",
+    "path": "src/scalable/apps/gnome-software.svg",
+    "output": "store.png",
+    "sha256": "0723dd876b3a83039ca377a7c9da5941fafc53c9e0f91c11f9758db6532835d7"
+  },
+  {
+    "pack": "qogir",
+    "repo": "vinceliuice/Qogir-icon-theme",
+    "revision": "c633057ba0d27a504b3255144071c9691ed0264a",
+    "path": "src/scalable/apps/spotify-client.svg",
+    "output": "spotify.png",
+    "sha256": "3be807d578dffd8484f4028fcdee2b32fbe7ac02bf2df5d9cac1274be870a25f"
+  },
+  {
+    "pack": "qogir",
+    "repo": "vinceliuice/Qogir-icon-theme",
+    "revision": "c633057ba0d27a504b3255144071c9691ed0264a",
+    "path": "src/scalable/apps/steam.svg",
+    "output": "steam.png",
+    "sha256": "b5823a0d721f8196720843e681cab6a0ca36957c1f83f19a9ed05464106216ec"
+  },
+  {
+    "pack": "qogir",
+    "repo": "vinceliuice/Qogir-icon-theme",
+    "revision": "c633057ba0d27a504b3255144071c9691ed0264a",
+    "path": "src/scalable/apps/discord.svg",
+    "output": "discord.png",
+    "sha256": "d46b4ebd1662c96706c4241d8b5411b620eed958890563bf19d1a57f768dc595"
+  },
+  {
+    "pack": "qogir",
+    "repo": "vinceliuice/Qogir-icon-theme",
+    "revision": "c633057ba0d27a504b3255144071c9691ed0264a",
+    "path": "src/scalable/apps/telegram.svg",
+    "output": "telegram.png",
+    "sha256": "dd58b0a4e03c68d551ce5190c4139298ee88d3550224174d75d4e338b2f65560"
+  },
+  {
+    "pack": "qogir",
+    "repo": "vinceliuice/Qogir-icon-theme",
+    "revision": "c633057ba0d27a504b3255144071c9691ed0264a",
+    "path": "src/scalable/apps/vlc.svg",
+    "output": "vlc.png",
+    "sha256": "81ed8ea6e6d586e528e56a90e0cb501dcf800e061022ed472b1cfe65fa42572c"
+  },
+  {
+    "pack": "qogir",
+    "repo": "vinceliuice/Qogir-icon-theme",
+    "revision": "c633057ba0d27a504b3255144071c9691ed0264a",
+    "path": "src/scalable/apps/obs.svg",
+    "output": "obs.png",
+    "sha256": "037ae3350e45f92e37dd73a4c92a1007f7618044155c6d11b145b4571c2ffb63"
+  },
+  {
+    "pack": "qogir",
+    "repo": "vinceliuice/Qogir-icon-theme",
+    "revision": "c633057ba0d27a504b3255144071c9691ed0264a",
+    "path": "src/scalable/apps/blender.svg",
+    "output": "blender.png",
+    "sha256": "a38f7bcb55729f3a2f476f25bd1eec8ae3b973aff69634e563e2dd7bbbfa3523"
+  },
+  {
+    "pack": "qogir",
+    "repo": "vinceliuice/Qogir-icon-theme",
+    "revision": "c633057ba0d27a504b3255144071c9691ed0264a",
+    "path": "src/scalable/apps/gimp.svg",
+    "output": "gimp.png",
+    "sha256": "b52cfabe97ab104c9dec9dc04698d52429ffea001ddf7d0a5b1ffa7914b3d532"
+  },
+  {
+    "pack": "qogir",
+    "repo": "vinceliuice/Qogir-icon-theme",
+    "revision": "c633057ba0d27a504b3255144071c9691ed0264a",
+    "path": "src/scalable/apps/inkscape.svg",
+    "output": "inkscape.png",
+    "sha256": "485893fcd739adb0baa0abab5d1817f1788703d16af0803697665be8e7e3917c"
+  },
+  {
+    "pack": "qogir",
+    "repo": "vinceliuice/Qogir-icon-theme",
+    "revision": "c633057ba0d27a504b3255144071c9691ed0264a",
+    "path": "src/scalable/apps/accessories-text-editor.svg",
+    "output": "notepad.png",
+    "sha256": "8c5452eb463ad69e6dde43e92d6ed82b70c597d94c265c63299c099ecfa62148"
+  },
+  {
+    "pack": "qogir",
+    "repo": "vinceliuice/Qogir-icon-theme",
+    "revision": "c633057ba0d27a504b3255144071c9691ed0264a",
+    "path": "src/scalable/apps/ms-word.svg",
+    "output": "word.png",
+    "sha256": "5ae36cd1845f2e411f7faa27e3cafa69fc2c4a482f93dfed738dd57458e5a6f4"
+  },
+  {
+    "pack": "qogir",
+    "repo": "vinceliuice/Qogir-icon-theme",
+    "revision": "c633057ba0d27a504b3255144071c9691ed0264a",
+    "path": "src/scalable/apps/ms-excel.svg",
+    "output": "excel.png",
+    "sha256": "55fd5d8890a0a22a68ee50055b317e621e5ba368608a5a4f4672164748e315ff"
+  },
+  {
+    "pack": "qogir",
+    "repo": "vinceliuice/Qogir-icon-theme",
+    "revision": "c633057ba0d27a504b3255144071c9691ed0264a",
+    "path": "src/scalable/apps/ms-powerpoint.svg",
+    "output": "powerpoint.png",
+    "sha256": "f57e543e7c9faa3eacb5220310437200820039e81836b6ee499c5a070f38dbc3"
+  },
+  {
+    "pack": "qogir",
+    "repo": "vinceliuice/Qogir-icon-theme",
+    "revision": "c633057ba0d27a504b3255144071c9691ed0264a",
+    "path": "src/scalable/apps/ms-outlook.svg",
+    "output": "outlook.png",
+    "sha256": "2f243c6e6741e99e53f9a81ab8fceac9b2ee5c36a67961226418c32d6bd83c22"
+  },
+  {
+    "pack": "qogir",
+    "repo": "vinceliuice/Qogir-icon-theme",
+    "revision": "c633057ba0d27a504b3255144071c9691ed0264a",
+    "path": "src/scalable/apps/github.svg",
+    "output": "github.png",
+    "sha256": "c1be5be70e53449be6e4d801e337b039d020569a6c43d00d01634d91dd692fcf"
+  },
+  {
+    "pack": "qogir",
+    "repo": "vinceliuice/Qogir-icon-theme",
+    "revision": "c633057ba0d27a504b3255144071c9691ed0264a",
+    "path": "src/scalable/apps/calc.svg",
+    "output": "calculator.png",
+    "sha256": "f27d58b27b7b4ac662177bceed47d346a5723d220dc901db00880793a5a6b398"
+  },
+  {
+    "pack": "qogir",
+    "repo": "vinceliuice/Qogir-icon-theme",
+    "revision": "c633057ba0d27a504b3255144071c9691ed0264a",
+    "path": "src/scalable/apps/accessories-image-viewer.svg",
+    "output": "photos.png",
+    "sha256": "bb463d837d6955c748b5bfc09a1bba33d3e12a686b353b2dc91e8fe202dd8457"
+  },
+  {
+    "pack": "qogir",
+    "repo": "vinceliuice/Qogir-icon-theme",
+    "revision": "c633057ba0d27a504b3255144071c9691ed0264a",
+    "path": "src/scalable/apps/gnome-paint.svg",
+    "output": "paint.png",
+    "sha256": "1c3b28911ad63a9f448b36ee39aca05d54f6c668dba83f429fb165e4e0d8b466"
+  },
+  {
+    "pack": "qogir",
+    "repo": "vinceliuice/Qogir-icon-theme",
+    "revision": "c633057ba0d27a504b3255144071c9691ed0264a",
+    "path": "src/32/apps/multimedia-video-player.svg",
+    "output": "music.png",
+    "sha256": "20fcff1990b7ff1fa251c1f919c3bc09ce51cbb1564f22d826796fbb491e1945"
+  },
+  {
+    "pack": "qogir",
+    "repo": "vinceliuice/Qogir-icon-theme",
+    "revision": "c633057ba0d27a504b3255144071c9691ed0264a",
+    "path": "src/32/apps/multimedia-video-player.svg",
+    "output": "video.png",
+    "sha256": "20fcff1990b7ff1fa251c1f919c3bc09ce51cbb1564f22d826796fbb491e1945"
+  }
+]

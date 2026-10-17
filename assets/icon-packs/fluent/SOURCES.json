@@ -1,0 +1,234 @@
+[
+  {
+    "pack": "fluent",
+    "repo": "vinceliuice/Fluent-icon-theme",
+    "revision": "c8a244f571ef8fb47812bdc9dbce76546cedce69",
+    "path": "src/scalable/apps/google-chrome.svg",
+    "output": "chrome.png",
+    "sha256": "489b0d1ed363ffdf24491217075eed1455d22089a78bb2637b8740f2b2aaacf3"
+  },
+  {
+    "pack": "fluent",
+    "repo": "vinceliuice/Fluent-icon-theme",
+    "revision": "c8a244f571ef8fb47812bdc9dbce76546cedce69",
+    "path": "src/scalable/apps/firefox.svg",
+    "output": "firefox.png",
+    "sha256": "b6840d1b285718076edb468ef1dd812774d01f84560b829bb0e1b8ff7b96a952"
+  },
+  {
+    "pack": "fluent",
+    "repo": "vinceliuice/Fluent-icon-theme",
+    "revision": "c8a244f571ef8fb47812bdc9dbce76546cedce69",
+    "path": "src/scalable/apps/microsoft-edge.svg",
+    "output": "edge.png",
+    "sha256": "879fb4aedee6c1e640a89a02ef0a57fbbbb601924eb95fa030eff524986b3dae"
+  },
+  {
+    "pack": "fluent",
+    "repo": "vinceliuice/Fluent-icon-theme",
+    "revision": "c8a244f571ef8fb47812bdc9dbce76546cedce69",
+    "path": "src/scalable/apps/brave.svg",
+    "output": "brave.png",
+    "sha256": "64b4d841dccb8cd9eedd06634fb87589c17dd120797e0e6e6070308267be220b"
+  },
+  {
+    "pack": "fluent",
+    "repo": "vinceliuice/Fluent-icon-theme",
+    "revision": "c8a244f571ef8fb47812bdc9dbce76546cedce69",
+    "path": "src/scalable/apps/visualstudiocode.svg",
+    "output": "code.png",
+    "sha256": "f1f768ab19b32e4b0d2c5269facac7a5a21d512371311ee9a4d620fc44eddc82"
+  },
+  {
+    "pack": "fluent",
+    "repo": "vinceliuice/Fluent-icon-theme",
+    "revision": "c8a244f571ef8fb47812bdc9dbce76546cedce69",
+    "path": "src/scalable/apps/terminal.svg",
+    "output": "terminal.png",
+    "sha256": "df74299e5b06ea28379ebaa2e351964c548ac0e81de2293df308bf58b329e0b3"
+  },
+  {
+    "pack": "fluent",
+    "repo": "vinceliuice/Fluent-icon-theme",
+    "revision": "c8a244f571ef8fb47812bdc9dbce76546cedce69",
+    "path": "src/scalable/apps/file-manager.svg",
+    "output": "files.png",
+    "sha256": "7a36ef3dd45a65a2a91a1ef6ddd8234743a9f977ca72b4196915715f1fa67dfa"
+  },
+  {
+    "pack": "fluent",
+    "repo": "vinceliuice/Fluent-icon-theme",
+    "revision": "c8a244f571ef8fb47812bdc9dbce76546cedce69",
+    "path": "src/scalable/apps/preferences-system.svg",
+    "output": "settings.png",
+    "sha256": "c3bfe8f493f8d311bcefd8ef23158785cf3d05342042769b9cffc80a4b7d7c54"
+  },
+  {
+    "pack": "fluent",
+    "repo": "vinceliuice/Fluent-icon-theme",
+    "revision": "c8a244f571ef8fb47812bdc9dbce76546cedce69",
+    "path": "src/scalable/apps/gnome-software.svg",
+    "output": "store.png",
+    "sha256": "8863ad0f946df35d4dd3a3131a467218b364c818f8f44b21af50cb617847beab"
+  },
+  {
+    "pack": "fluent",
+    "repo": "vinceliuice/Fluent-icon-theme",
+    "revision": "c8a244f571ef8fb47812bdc9dbce76546cedce69",
+    "path": "src/scalable/apps/spotify-client.svg",
+    "output": "spotify.png",
+    "sha256": "86e77fd39717e8a18df491bac2e3ba9221db434f1756615f0575bb1689f0a5f5"
+  },
+  {
+    "pack": "fluent",
+    "repo": "vinceliuice/Fluent-icon-theme",
+    "revision": "c8a244f571ef8fb47812bdc9dbce76546cedce69",
+    "path": "src/scalable/apps/steam.svg",
+    "output": "steam.png",
+    "sha256": "5bfc036251bf73f05be30f2201ba3b511e2a78b7c3d2047974ed25e5e3556bd3"
+  },
+  {
+    "pack": "fluent",
+    "repo": "vinceliuice/Fluent-icon-theme",
+    "revision": "c8a244f571ef8fb47812bdc9dbce76546cedce69",
+    "path": "src/scalable/apps/discord.svg",
+    "output": "discord.png",
+    "sha256": "047bd3cc2256411a37b1058bef6bbf29a363458e5a67b0665296cbe9264dba53"
+  },
+  {
+    "pack": "fluent",
+    "repo": "vinceliuice/Fluent-icon-theme",
+    "revision": "c8a244f571ef8fb47812bdc9dbce76546cedce69",
+    "path": "src/scalable/apps/telegram.svg",
+    "output": "telegram.png",
+    "sha256": "fac259467df5c0d7bd4d61863e80958cae45012e607f2c1fbc639d022b878c82"
+  },
+  {
+    "pack": "fluent",
+    "repo": "vinceliuice/Fluent-icon-theme",
+    "revision": "c8a244f571ef8fb47812bdc9dbce76546cedce69",
+    "path": "src/scalable/apps/vlc.svg",
+    "output": "vlc.png",
+    "sha256": "f6ea4c0063daaeccdb9b45e61cceb6e5b9d4f98a6af50d82fb508d7dc4323e8f"
+  },
+  {
+    "pack": "fluent",
+    "repo": "vinceliuice/Fluent-icon-theme",
+    "revision": "c8a244f571ef8fb47812bdc9dbce76546cedce69",
+    "path": "src/scalable/apps/obs.svg",
+    "output": "obs.png",
+    "sha256": "266dfbb1ec17aabad06c4e98a56e708fd2f4d9686bb9110a71b8ff49c45f0c09"
+  },
+  {
+    "pack": "fluent",
+    "repo": "vinceliuice/Fluent-icon-theme",
+    "revision": "c8a244f571ef8fb47812bdc9dbce76546cedce69",
+    "path": "src/scalable/apps/blender.svg",
+    "output": "blender.png",
+    "sha256": "68f2ef9ad7e106ae68e3d90555902177f32032f6075cd98cba26657f4f819b94"
+  },
+  {
+    "pack": "fluent",
+    "repo": "vinceliuice/Fluent-icon-theme",
+    "revision": "c8a244f571ef8fb47812bdc9dbce76546cedce69",
+    "path": "src/scalable/apps/gimp.svg",
+    "output": "gimp.png",
+    "sha256": "cd40ebd8f796807abdbc1c3f4e9d0a629b8c52baf09cd6f7e54f2f34307ce15b"
+  },
+  {
+    "pack": "fluent",
+    "repo": "vinceliuice/Fluent-icon-theme",
+    "revision": "c8a244f571ef8fb47812bdc9dbce76546cedce69",
+    "path": "src/scalable/apps/inkscape.svg",
+    "output": "inkscape.png",
+    "sha256": "539c6ec50257dee9968f21772f60ab9ac3b2abda3a311e67691675dcfaaedca8"
+  },
+  {
+    "pack": "fluent",
+    "repo": "vinceliuice/Fluent-icon-theme",
+    "revision": "c8a244f571ef8fb47812bdc9dbce76546cedce69",
+    "path": "src/scalable/apps/text-editor.svg",
+    "output": "notepad.png",
+    "sha256": "d293ec1108702b99943b98e9e1526bb487fbfc1312a9e8ace356b1597bfad1e4"
+  },
+  {
+    "pack": "fluent",
+    "repo": "vinceliuice/Fluent-icon-theme",
+    "revision": "c8a244f571ef8fb47812bdc9dbce76546cedce69",
+    "path": "src/scalable/apps/ms-word.svg",
+    "output": "word.png",
+    "sha256": "1e4edb94ef8efd2bfbab8fec8c8c77232ec6695f21082aa0312a5144f15ce1f1"
+  },
+  {
+    "pack": "fluent",
+    "repo": "vinceliuice/Fluent-icon-theme",
+    "revision": "c8a244f571ef8fb47812bdc9dbce76546cedce69",
+    "path": "src/scalable/apps/ms-excel.svg",
+    "output": "excel.png",
+    "sha256": "9775b07f6ea7ebd0d76835576f2142b765489948e0d2f7ad8fe79e6fdf8ffc07"
+  },
+  {
+    "pack": "fluent",
+    "repo": "vinceliuice/Fluent-icon-theme",
+    "revision": "c8a244f571ef8fb47812bdc9dbce76546cedce69",
+    "path": "src/scalable/apps/ms-powerpoint.svg",
+    "output": "powerpoint.png",
+    "sha256": "924868c915e997b79a5450735666261fe2ede12911254291cb9dfbe8b4a0935c"
+  },
+  {
+    "pack": "fluent",
+    "repo": "vinceliuice/Fluent-icon-theme",
+    "revision": "c8a244f571ef8fb47812bdc9dbce76546cedce69",
+    "path": "src/scalable/apps/ms-outlook.svg",
+    "output": "outlook.png",
+    "sha256": "bc7db36f8bece3fbf3fd339f654059ece5b0b27ea5c332da0c7d2c7ad4dcff28"
+  },
+  {
+    "pack": "fluent",
+    "repo": "vinceliuice/Fluent-icon-theme",
+    "revision": "c8a244f571ef8fb47812bdc9dbce76546cedce69",
+    "path": "src/scalable/apps/github.svg",
+    "output": "github.png",
+    "sha256": "99cab65951555e78377ce4f6dfc17c346a5abfb26e048c3560eefe42b4afd4b2"
+  },
+  {
+    "pack": "fluent",
+    "repo": "vinceliuice/Fluent-icon-theme",
+    "revision": "c8a244f571ef8fb47812bdc9dbce76546cedce69",
+    "path": "src/scalable/apps/calc.svg",
+    "output": "calculator.png",
+    "sha256": "c8f7a49ad261e96a325c763685a51160cf1dc4bdbc317a6b13d73901f08f8ea3"
+  },
+  {
+    "pack": "fluent",
+    "repo": "vinceliuice/Fluent-icon-theme",
+    "revision": "c8a244f571ef8fb47812bdc9dbce76546cedce69",
+    "path": "src/scalable/apps/accessories-image-viewer.svg",
+    "output": "photos.png",
+    "sha256": "3c7acf2c0a3c82cc3dbb0e0891714819d3152c5bde5db94675f7dbaecd4b05c1"
+  },
+  {
+    "pack": "fluent",
+    "repo": "vinceliuice/Fluent-icon-theme",
+    "revision": "c8a244f571ef8fb47812bdc9dbce76546cedce69",
+    "path": "src/scalable/apps/gnome-paint.svg",
+    "output": "paint.png",
+    "sha256": "5447d74afa2ca1898109da398b9dd4992e9480fc0c27add8b473e6fcc69c93ec"
+  },
+  {
+    "pack": "fluent",
+    "repo": "vinceliuice/Fluent-icon-theme",
+    "revision": "c8a244f571ef8fb47812bdc9dbce76546cedce69",
+    "path": "src/scalable/apps/smplayer.svg",
+    "output": "music.png",
+    "sha256": "881acf2d7ec1f3fd1d909102d894637bf3ce9a2e318229f1c0f53e070969edaf"
+  },
+  {
+    "pack": "fluent",
+    "repo": "vinceliuice/Fluent-icon-theme",
+    "revision": "c8a244f571ef8fb47812bdc9dbce76546cedce69",
+    "path": "src/scalable/apps/smplayer.svg",
+    "output": "video.png",
+    "sha256": "881acf2d7ec1f3fd1d909102d894637bf3ce9a2e318229f1c0f53e070969edaf"
+  }
+]

@@ -1,0 +1,3 @@
+Source: https://github.com/ubuntu/yaru
+Pinned revision: 7f18973e05607c609c4b972f0dd9bff36fa2a13e
+Rasterized to 128px PNG with sharp/libvips for Aether. Unmodified corresponding SVG sources included where applicable. Original authors and license in LICENSE.txt.

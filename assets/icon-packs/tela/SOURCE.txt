@@ -1,0 +1,3 @@
+Source: https://github.com/vinceliuice/Tela-icon-theme
+Pinned revision: a1fffc5bfab716bd022dd228ee96fe3965cdb33d
+Rasterized to 128px PNG with sharp/libvips for Aether. Unmodified corresponding SVG sources included where applicable. Original authors and license in LICENSE.txt.

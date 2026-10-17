@@ -1,0 +1,11 @@
+[AetherTheme]
+version=1
+[theme]
+name=Midnight
+background=151923
+surface=1F2735
+raised=303D52
+foreground=F0F5FF
+muted=A3B2C9
+accent=89B4FA
+radius=16

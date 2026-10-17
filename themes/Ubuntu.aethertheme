@@ -1,0 +1,11 @@
+[AetherTheme]
+version=1
+[theme]
+name=Ubuntu
+background=211C28
+surface=2D2636
+raised=403448
+foreground=F5F1F7
+muted=BFB3C9
+accent=E97843
+radius=16

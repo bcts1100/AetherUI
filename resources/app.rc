@@ -1,0 +1,3 @@
+// Aether UI 0.7.1; app.manifest is embedded by the MSVC linker.
+#include <windows.h>
+101 ICON "aether.ico"

@@ -1,0 +1,5 @@
+Source: https://github.com/PapirusDevelopmentTeam/papirus-icon-theme
+Pinned revision: bf539287ef5dc18529424a02cccee76175920a6f
+Rasterized to 128px PNG with sharp/libvips for Aether. Unmodified corresponding SVG sources included where applicable. Original authors and license in LICENSE.txt.
+
+Aether derivative: raster tint #62e6df plus 2px glow. Transformation source: tools/Prepare-IconVariants.cjs. Original corresponding SVGs and GPL license retained.

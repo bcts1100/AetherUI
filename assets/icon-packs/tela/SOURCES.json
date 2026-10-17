@@ -1,0 +1,234 @@
+[
+  {
+    "pack": "tela",
+    "repo": "vinceliuice/Tela-icon-theme",
+    "revision": "a1fffc5bfab716bd022dd228ee96fe3965cdb33d",
+    "path": "src/scalable/apps/google-chrome.svg",
+    "output": "chrome.png",
+    "sha256": "7e2b020fbcbc37548e6f990610b122a512e8d00808e57796261cadc6044ff80f"
+  },
+  {
+    "pack": "tela",
+    "repo": "vinceliuice/Tela-icon-theme",
+    "revision": "a1fffc5bfab716bd022dd228ee96fe3965cdb33d",
+    "path": "src/scalable/apps/firefox.svg",
+    "output": "firefox.png",
+    "sha256": "e3edbf2bc6f8b5bcef369669fb6e9b266a38ba0339b30c8e6cb8d8ab23625863"
+  },
+  {
+    "pack": "tela",
+    "repo": "vinceliuice/Tela-icon-theme",
+    "revision": "a1fffc5bfab716bd022dd228ee96fe3965cdb33d",
+    "path": "src/scalable/apps/microsoft-edge.svg",
+    "output": "edge.png",
+    "sha256": "aed8fa294234255854275ae2cd4db56456c1e8115f2cc114599865ea694bb5c0"
+  },
+  {
+    "pack": "tela",
+    "repo": "vinceliuice/Tela-icon-theme",
+    "revision": "a1fffc5bfab716bd022dd228ee96fe3965cdb33d",
+    "path": "src/scalable/apps/brave.svg",
+    "output": "brave.png",
+    "sha256": "8fc3fe2049e2f9b9cadc7838e8d572981ae388ab6f5d02823d31085c62dc9eb0"
+  },
+  {
+    "pack": "tela",
+    "repo": "vinceliuice/Tela-icon-theme",
+    "revision": "a1fffc5bfab716bd022dd228ee96fe3965cdb33d",
+    "path": "src/scalable/apps/visualstudiocode.svg",
+    "output": "code.png",
+    "sha256": "0f3a25e59cdfd295fab820ba7e51e45da7130dc0f4d2ac84c3645200b4e085ff"
+  },
+  {
+    "pack": "tela",
+    "repo": "vinceliuice/Tela-icon-theme",
+    "revision": "a1fffc5bfab716bd022dd228ee96fe3965cdb33d",
+    "path": "src/scalable/apps/terminal.svg",
+    "output": "terminal.png",
+    "sha256": "b11154c66b7e5bc38e7ca3726065fb7efaf65056abe5332165fcd1d63f3de01f"
+  },
+  {
+    "pack": "tela",
+    "repo": "vinceliuice/Tela-icon-theme",
+    "revision": "a1fffc5bfab716bd022dd228ee96fe3965cdb33d",
+    "path": "colorscheme/apps/scalable/file-manager.svg",
+    "output": "files.png",
+    "sha256": "1ef636a60c460e092a2d6e7b29af6ceadbe0c95c81889fba5c948ed4b4fef99a"
+  },
+  {
+    "pack": "tela",
+    "repo": "vinceliuice/Tela-icon-theme",
+    "revision": "a1fffc5bfab716bd022dd228ee96fe3965cdb33d",
+    "path": "src/scalable/apps/preferences-system.svg",
+    "output": "settings.png",
+    "sha256": "fdc513c5f8107281f4b1adefcd36d3e28ffe4ce52eb04b33a4c0b228b9a9835d"
+  },
+  {
+    "pack": "tela",
+    "repo": "vinceliuice/Tela-icon-theme",
+    "revision": "a1fffc5bfab716bd022dd228ee96fe3965cdb33d",
+    "path": "colorscheme/apps/scalable/gnome-software.svg",
+    "output": "store.png",
+    "sha256": "4df6f09027c1a9b1b0b6d608c2e8e7ea1dfedde7bd2acff2ef0937eca9a65ecc"
+  },
+  {
+    "pack": "tela",
+    "repo": "vinceliuice/Tela-icon-theme",
+    "revision": "a1fffc5bfab716bd022dd228ee96fe3965cdb33d",
+    "path": "src/scalable/apps/spotify-client.svg",
+    "output": "spotify.png",
+    "sha256": "bc71ad8e0e996c5d691dc67481480d126b9126728ce9d9101d2c4d482fa04373"
+  },
+  {
+    "pack": "tela",
+    "repo": "vinceliuice/Tela-icon-theme",
+    "revision": "a1fffc5bfab716bd022dd228ee96fe3965cdb33d",
+    "path": "src/scalable/apps/steam.svg",
+    "output": "steam.png",
+    "sha256": "3aabfa0bcd9cf3c839218225b1f945ed3953d029fa72eb3fd4ea42dc0fb7beb2"
+  },
+  {
+    "pack": "tela",
+    "repo": "vinceliuice/Tela-icon-theme",
+    "revision": "a1fffc5bfab716bd022dd228ee96fe3965cdb33d",
+    "path": "src/scalable/apps/discord.svg",
+    "output": "discord.png",
+    "sha256": "e6fa79a1c38e1a449febdb69728e689a389aef11f3938f092de9f11f78b35632"
+  },
+  {
+    "pack": "tela",
+    "repo": "vinceliuice/Tela-icon-theme",
+    "revision": "a1fffc5bfab716bd022dd228ee96fe3965cdb33d",
+    "path": "src/scalable/apps/telegram.svg",
+    "output": "telegram.png",
+    "sha256": "373c6ac19eca72c76f540d305fbe99f5d053f222d189c5bba92bf33745e3578b"
+  },
+  {
+    "pack": "tela",
+    "repo": "vinceliuice/Tela-icon-theme",
+    "revision": "a1fffc5bfab716bd022dd228ee96fe3965cdb33d",
+    "path": "src/scalable/apps/vlc.svg",
+    "output": "vlc.png",
+    "sha256": "04482a73e872947b8c9137b91be2cc5bd27f528b8eb9150c1ba665a0655ba5a4"
+  },
+  {
+    "pack": "tela",
+    "repo": "vinceliuice/Tela-icon-theme",
+    "revision": "a1fffc5bfab716bd022dd228ee96fe3965cdb33d",
+    "path": "src/scalable/apps/obs.svg",
+    "output": "obs.png",
+    "sha256": "4b76a622cfc4c73e1042e94b0ec1d2d2c72fcf48b01e4515a62014321d13abe2"
+  },
+  {
+    "pack": "tela",
+    "repo": "vinceliuice/Tela-icon-theme",
+    "revision": "a1fffc5bfab716bd022dd228ee96fe3965cdb33d",
+    "path": "src/scalable/apps/blender.svg",
+    "output": "blender.png",
+    "sha256": "0841b4917726c82b78a8c65ccaa793fe2921cb958b23963e1f36a0a5820c4e74"
+  },
+  {
+    "pack": "tela",
+    "repo": "vinceliuice/Tela-icon-theme",
+    "revision": "a1fffc5bfab716bd022dd228ee96fe3965cdb33d",
+    "path": "src/scalable/apps/gimp.svg",
+    "output": "gimp.png",
+    "sha256": "5ef16603c53540b83e1b98803f08e482d0cc18dbd32954a6b968ddfa8f432d43"
+  },
+  {
+    "pack": "tela",
+    "repo": "vinceliuice/Tela-icon-theme",
+    "revision": "a1fffc5bfab716bd022dd228ee96fe3965cdb33d",
+    "path": "src/scalable/apps/inkscape.svg",
+    "output": "inkscape.png",
+    "sha256": "90b687cb17b40b83ba2e5640710bbc2f80e81bc0c88721721f1f8e2094194aff"
+  },
+  {
+    "pack": "tela",
+    "repo": "vinceliuice/Tela-icon-theme",
+    "revision": "a1fffc5bfab716bd022dd228ee96fe3965cdb33d",
+    "path": "src/scalable/apps/accessories-text-editor.svg",
+    "output": "notepad.png",
+    "sha256": "2320318ae677eec9caeabc2813362502ab86aa203e09c88ad9813746584f7898"
+  },
+  {
+    "pack": "tela",
+    "repo": "vinceliuice/Tela-icon-theme",
+    "revision": "a1fffc5bfab716bd022dd228ee96fe3965cdb33d",
+    "path": "src/scalable/apps/ms-word.svg",
+    "output": "word.png",
+    "sha256": "1e4edb94ef8efd2bfbab8fec8c8c77232ec6695f21082aa0312a5144f15ce1f1"
+  },
+  {
+    "pack": "tela",
+    "repo": "vinceliuice/Tela-icon-theme",
+    "revision": "a1fffc5bfab716bd022dd228ee96fe3965cdb33d",
+    "path": "src/scalable/apps/ms-excel.svg",
+    "output": "excel.png",
+    "sha256": "9775b07f6ea7ebd0d76835576f2142b765489948e0d2f7ad8fe79e6fdf8ffc07"
+  },
+  {
+    "pack": "tela",
+    "repo": "vinceliuice/Tela-icon-theme",
+    "revision": "a1fffc5bfab716bd022dd228ee96fe3965cdb33d",
+    "path": "src/scalable/apps/ms-powerpoint.svg",
+    "output": "powerpoint.png",
+    "sha256": "924868c915e997b79a5450735666261fe2ede12911254291cb9dfbe8b4a0935c"
+  },
+  {
+    "pack": "tela",
+    "repo": "vinceliuice/Tela-icon-theme",
+    "revision": "a1fffc5bfab716bd022dd228ee96fe3965cdb33d",
+    "path": "src/scalable/apps/ms-outlook.svg",
+    "output": "outlook.png",
+    "sha256": "baf5befc02bcf37a5cdff5bd52c78e239b86e2ca6643d727b0daba266c344810"
+  },
+  {
+    "pack": "tela",
+    "repo": "vinceliuice/Tela-icon-theme",
+    "revision": "a1fffc5bfab716bd022dd228ee96fe3965cdb33d",
+    "path": "src/scalable/apps/github.svg",
+    "output": "github.png",
+    "sha256": "155952cee3a0aa695716edfdc2900834b6d0b6f8bab3872aded809f7eae0331a"
+  },
+  {
+    "pack": "tela",
+    "repo": "vinceliuice/Tela-icon-theme",
+    "revision": "a1fffc5bfab716bd022dd228ee96fe3965cdb33d",
+    "path": "src/scalable/apps/calc.svg",
+    "output": "calculator.png",
+    "sha256": "27c8863776f3f7b189840279906eb39b08948820b18b42d672626ac14764b661"
+  },
+  {
+    "pack": "tela",
+    "repo": "vinceliuice/Tela-icon-theme",
+    "revision": "a1fffc5bfab716bd022dd228ee96fe3965cdb33d",
+    "path": "src/scalable/apps/accessories-image-viewer.svg",
+    "output": "photos.png",
+    "sha256": "2abf415d6f8b3fce7f07ebad99cf05549ac990820a913db825cdbf5b22db8f7d"
+  },
+  {
+    "pack": "tela",
+    "repo": "vinceliuice/Tela-icon-theme",
+    "revision": "a1fffc5bfab716bd022dd228ee96fe3965cdb33d",
+    "path": "src/scalable/apps/gnome-paint.svg",
+    "output": "paint.png",
+    "sha256": "0c89b65d2ddffbc62c371ea6e2276ecd8d0a71147f1364c1c045919fa4291f17"
+  },
+  {
+    "pack": "tela",
+    "repo": "vinceliuice/Tela-icon-theme",
+    "revision": "a1fffc5bfab716bd022dd228ee96fe3965cdb33d",
+    "path": "src/scalable/apps/smplayer.svg",
+    "output": "music.png",
+    "sha256": "b06bbf552d2635269285644cf57c18cde187a294f53c0d8e5d9c40fcf0c76fa9"
+  },
+  {
+    "pack": "tela",
+    "repo": "vinceliuice/Tela-icon-theme",
+    "revision": "a1fffc5bfab716bd022dd228ee96fe3965cdb33d",
+    "path": "src/scalable/apps/smplayer.svg",
+    "output": "video.png",
+    "sha256": "b06bbf552d2635269285644cf57c18cde187a294f53c0d8e5d9c40fcf0c76fa9"
+  }
+]

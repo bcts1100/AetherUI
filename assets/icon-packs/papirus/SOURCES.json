@@ -1,0 +1,234 @@
+[
+  {
+    "pack": "papirus",
+    "repo": "PapirusDevelopmentTeam/papirus-icon-theme",
+    "revision": "bf539287ef5dc18529424a02cccee76175920a6f",
+    "path": "Papirus/64x64/apps/google-chrome.svg",
+    "output": "chrome.png",
+    "sha256": "e6dd509cef0f8ee7aeb9eee14d35fb5f57e08211ec503872097cf974537a84c5"
+  },
+  {
+    "pack": "papirus",
+    "repo": "PapirusDevelopmentTeam/papirus-icon-theme",
+    "revision": "bf539287ef5dc18529424a02cccee76175920a6f",
+    "path": "Papirus/64x64/apps/firefox.svg",
+    "output": "firefox.png",
+    "sha256": "83ab696131457cd5ed0900a0f23d21174040ea00e2bbf4dea0b83da7d2c04fe7"
+  },
+  {
+    "pack": "papirus",
+    "repo": "PapirusDevelopmentTeam/papirus-icon-theme",
+    "revision": "bf539287ef5dc18529424a02cccee76175920a6f",
+    "path": "Papirus/64x64/apps/microsoft-edge.svg",
+    "output": "edge.png",
+    "sha256": "a251ffbc1c70497143f76cd2c148c4649c6eb6e249f4b96abcddf75902d7ec49"
+  },
+  {
+    "pack": "papirus",
+    "repo": "PapirusDevelopmentTeam/papirus-icon-theme",
+    "revision": "bf539287ef5dc18529424a02cccee76175920a6f",
+    "path": "Papirus/64x64/apps/brave.svg",
+    "output": "brave.png",
+    "sha256": "d8a63193d386ad46446afcbbe5b5ca205acf940e84255b42d2fbc77cf77f203a"
+  },
+  {
+    "pack": "papirus",
+    "repo": "PapirusDevelopmentTeam/papirus-icon-theme",
+    "revision": "bf539287ef5dc18529424a02cccee76175920a6f",
+    "path": "Papirus/64x64/apps/vscode.svg",
+    "output": "code.png",
+    "sha256": "c72e499f6e693a9fa680b97c7373b00e16452650fb1805555dbfe57e92b3b325"
+  },
+  {
+    "pack": "papirus",
+    "repo": "PapirusDevelopmentTeam/papirus-icon-theme",
+    "revision": "bf539287ef5dc18529424a02cccee76175920a6f",
+    "path": "Papirus/64x64/apps/utilities-terminal.svg",
+    "output": "terminal.png",
+    "sha256": "ebae0bf867e36eb0e7f24812b7ac935a392a57933f1e9e4fcb27e8b42d1f610b"
+  },
+  {
+    "pack": "papirus",
+    "repo": "PapirusDevelopmentTeam/papirus-icon-theme",
+    "revision": "bf539287ef5dc18529424a02cccee76175920a6f",
+    "path": "Papirus/64x64/apps/system-file-manager.svg",
+    "output": "files.png",
+    "sha256": "8f239fee14d21003ab783fe618746569ded4e0e61728242b262751bf56020aeb"
+  },
+  {
+    "pack": "papirus",
+    "repo": "PapirusDevelopmentTeam/papirus-icon-theme",
+    "revision": "bf539287ef5dc18529424a02cccee76175920a6f",
+    "path": "Papirus/64x64/apps/utilities-tweak-tool.svg",
+    "output": "settings.png",
+    "sha256": "76a186c1a1ecfe32e5f42ab1512f96eac374c84c6f0e6b169999911ccc2669ba"
+  },
+  {
+    "pack": "papirus",
+    "repo": "PapirusDevelopmentTeam/papirus-icon-theme",
+    "revision": "bf539287ef5dc18529424a02cccee76175920a6f",
+    "path": "Papirus/64x64/apps/software-store.svg",
+    "output": "store.png",
+    "sha256": "7d8ddaec1f2e3ecc0f24153bc4c68efa3889c9bd648c97c1b7f2c16a6df76316"
+  },
+  {
+    "pack": "papirus",
+    "repo": "PapirusDevelopmentTeam/papirus-icon-theme",
+    "revision": "bf539287ef5dc18529424a02cccee76175920a6f",
+    "path": "Papirus/64x64/apps/spotify-client.svg",
+    "output": "spotify.png",
+    "sha256": "72f4cd464f856ace552fdf429c5c0a8a68f697cae1ec3b9bcb439a9aaadc11e5"
+  },
+  {
+    "pack": "papirus",
+    "repo": "PapirusDevelopmentTeam/papirus-icon-theme",
+    "revision": "bf539287ef5dc18529424a02cccee76175920a6f",
+    "path": "Papirus/64x64/apps/steam.svg",
+    "output": "steam.png",
+    "sha256": "e421775ee0a22c5d53127eee4aa5c16310f11241d8f8f932945808b5650cf35d"
+  },
+  {
+    "pack": "papirus",
+    "repo": "PapirusDevelopmentTeam/papirus-icon-theme",
+    "revision": "bf539287ef5dc18529424a02cccee76175920a6f",
+    "path": "Papirus/64x64/apps/discord.svg",
+    "output": "discord.png",
+    "sha256": "36d024754bf444709daf981218059358e3c00a5a43df6e8ac81c07f6496e2897"
+  },
+  {
+    "pack": "papirus",
+    "repo": "PapirusDevelopmentTeam/papirus-icon-theme",
+    "revision": "bf539287ef5dc18529424a02cccee76175920a6f",
+    "path": "Papirus/64x64/apps/telegram.svg",
+    "output": "telegram.png",
+    "sha256": "916f65cada15bfc91fafa822287ccfd662c9548f3b75e84b809f6d880994af6b"
+  },
+  {
+    "pack": "papirus",
+    "repo": "PapirusDevelopmentTeam/papirus-icon-theme",
+    "revision": "bf539287ef5dc18529424a02cccee76175920a6f",
+    "path": "Papirus/64x64/apps/vlc.svg",
+    "output": "vlc.png",
+    "sha256": "48a2ccffc15723cd3cbc66e77721743baf21d5eb9bd8d3cd67d32dd18a9ea968"
+  },
+  {
+    "pack": "papirus",
+    "repo": "PapirusDevelopmentTeam/papirus-icon-theme",
+    "revision": "bf539287ef5dc18529424a02cccee76175920a6f",
+    "path": "Papirus/64x64/apps/obs.svg",
+    "output": "obs.png",
+    "sha256": "53278ac0f82a6484112e4d97aed3b92b1f4d65be0a4d9af4d7498397f1a288b3"
+  },
+  {
+    "pack": "papirus",
+    "repo": "PapirusDevelopmentTeam/papirus-icon-theme",
+    "revision": "bf539287ef5dc18529424a02cccee76175920a6f",
+    "path": "Papirus/64x64/apps/blender.svg",
+    "output": "blender.png",
+    "sha256": "03fe04a711adf026de250d34a8ac5dc80a36c90de2c5cc482c608b7de6d86d2a"
+  },
+  {
+    "pack": "papirus",
+    "repo": "PapirusDevelopmentTeam/papirus-icon-theme",
+    "revision": "bf539287ef5dc18529424a02cccee76175920a6f",
+    "path": "Papirus/64x64/apps/gimp.svg",
+    "output": "gimp.png",
+    "sha256": "fd47bf10513d9fe8f79f36daa26e4c2b772846a6b7fd6b9fffc02bcb8cde1d82"
+  },
+  {
+    "pack": "papirus",
+    "repo": "PapirusDevelopmentTeam/papirus-icon-theme",
+    "revision": "bf539287ef5dc18529424a02cccee76175920a6f",
+    "path": "Papirus/64x64/apps/inkscape.svg",
+    "output": "inkscape.png",
+    "sha256": "945dbab6b3abe0bdad6149bb06a54dcacfdc83b6a7f6b6c6788ea2405235295c"
+  },
+  {
+    "pack": "papirus",
+    "repo": "PapirusDevelopmentTeam/papirus-icon-theme",
+    "revision": "bf539287ef5dc18529424a02cccee76175920a6f",
+    "path": "Papirus/64x64/apps/accessories-text-editor.svg",
+    "output": "notepad.png",
+    "sha256": "8358b057bc8125fa3ec1575eb6dbaf4cc598a530d30b19995231db26830e6ff6"
+  },
+  {
+    "pack": "papirus",
+    "repo": "PapirusDevelopmentTeam/papirus-icon-theme",
+    "revision": "bf539287ef5dc18529424a02cccee76175920a6f",
+    "path": "Papirus/64x64/apps/ms-word.svg",
+    "output": "word.png",
+    "sha256": "1e5cb53803087fc96005c44b4a023da26692937ed329d404554f28aa9767d714"
+  },
+  {
+    "pack": "papirus",
+    "repo": "PapirusDevelopmentTeam/papirus-icon-theme",
+    "revision": "bf539287ef5dc18529424a02cccee76175920a6f",
+    "path": "Papirus/64x64/apps/ms-excel.svg",
+    "output": "excel.png",
+    "sha256": "ebcd921b9e9daa0c3ca086c86f80c69ed1ddd94c8d41a101502bed7d187a57fb"
+  },
+  {
+    "pack": "papirus",
+    "repo": "PapirusDevelopmentTeam/papirus-icon-theme",
+    "revision": "bf539287ef5dc18529424a02cccee76175920a6f",
+    "path": "Papirus/64x64/apps/ms-powerpoint.svg",
+    "output": "powerpoint.png",
+    "sha256": "847fcb71a8ae887d4507ebd4d820cc65b6a783273d7ffd75886ce1498af80988"
+  },
+  {
+    "pack": "papirus",
+    "repo": "PapirusDevelopmentTeam/papirus-icon-theme",
+    "revision": "bf539287ef5dc18529424a02cccee76175920a6f",
+    "path": "Papirus/64x64/apps/ms-outlook.svg",
+    "output": "outlook.png",
+    "sha256": "8988c41d148b5248d89be92eee1fe6d7f4b5d7ef17ba00765e3535fc0909e889"
+  },
+  {
+    "pack": "papirus",
+    "repo": "PapirusDevelopmentTeam/papirus-icon-theme",
+    "revision": "bf539287ef5dc18529424a02cccee76175920a6f",
+    "path": "Papirus/64x64/apps/github-desktop.svg",
+    "output": "github.png",
+    "sha256": "73c47d71be12835006d3953d882dd6ab1daf4849740017cf44cf69b55392cf35"
+  },
+  {
+    "pack": "papirus",
+    "repo": "PapirusDevelopmentTeam/papirus-icon-theme",
+    "revision": "bf539287ef5dc18529424a02cccee76175920a6f",
+    "path": "Papirus/64x64/apps/accessories-calculator.svg",
+    "output": "calculator.png",
+    "sha256": "3b296e5ebeb778ff4d07239a6f057ba9203ae13272fa25518a2f7a488b761720"
+  },
+  {
+    "pack": "papirus",
+    "repo": "PapirusDevelopmentTeam/papirus-icon-theme",
+    "revision": "bf539287ef5dc18529424a02cccee76175920a6f",
+    "path": "Papirus/64x64/apps/multimedia-photo-viewer.svg",
+    "output": "photos.png",
+    "sha256": "585583f59f15a741664312ea213fd6209749813aad639740fe77285f2e6f710d"
+  },
+  {
+    "pack": "papirus",
+    "repo": "PapirusDevelopmentTeam/papirus-icon-theme",
+    "revision": "bf539287ef5dc18529424a02cccee76175920a6f",
+    "path": "Papirus/64x64/apps/com.github.cassidyjames.palette.svg",
+    "output": "paint.png",
+    "sha256": "b6d513beffc12973f73452610b43bdd70cfb315060cb957714b78afe6a4cfa8b"
+  },
+  {
+    "pack": "papirus",
+    "repo": "PapirusDevelopmentTeam/papirus-icon-theme",
+    "revision": "bf539287ef5dc18529424a02cccee76175920a6f",
+    "path": "Papirus/64x64/apps/org.gnome.Music.svg",
+    "output": "music.png",
+    "sha256": "ebb8d7e50981cde83ca8ecc55f17383518c4d9bf4af9f8aa22ea160fe7322238"
+  },
+  {
+    "pack": "papirus",
+    "repo": "PapirusDevelopmentTeam/papirus-icon-theme",
+    "revision": "bf539287ef5dc18529424a02cccee76175920a6f",
+    "path": "Papirus/64x64/apps/multimedia-video-player.svg",
+    "output": "video.png",
+    "sha256": "669addd04e48a9c94f0a5ef7717e93b4582f496b81d311d012484c91a182d9a4"
+  }
+]

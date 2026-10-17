@@ -1,0 +1,3 @@
+Source: https://github.com/vinceliuice/Qogir-icon-theme
+Pinned revision: c633057ba0d27a504b3255144071c9691ed0264a
+Rasterized to 128px PNG with sharp/libvips for Aether. Unmodified corresponding SVG sources included where applicable. Original authors and license in LICENSE.txt.
