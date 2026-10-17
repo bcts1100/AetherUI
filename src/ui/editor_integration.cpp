@@ -1,0 +1,21 @@
+#include "editor.hpp"
+#include "app.hpp"
+#include "platform/appearance.hpp"
+#include "platform/dialogs.hpp"
+#include <set>
+namespace aether::ui {
+void Editor::integration(Canvas& c,float y){const float width=c.size().width-246;auto update=[this](IntegrationOptions options){try{app_.appearanceBridge().configure(std::move(options),app_.theme());app_.appearanceBridge().reconcile(app_.windows(),app_.theme());}catch(const std::exception& e){win::message(hwnd_,win::wide(e.what()),MB_OK|MB_ICONERROR);}invalidate();};auto options=app_.appearanceBridge().options();
+ c.text(L"ONE PALETTE, COORDINATED TOOLS",box(222,y,width,25),theme_.muted,10,true);c.text(L"Aether Terminal and Files follow this theme. Windows and other apps expose fewer appearance controls.",box(222,y+33,width,54),theme_.foreground,12);
+ const float half=(width-12)/2;button(c,box(220,y+96,half,38),L"Open Aether Terminal",[this]{app_.appearanceBridge().launchTools(hwnd_,true);});button(c,box(232+half,y+96,half,38),L"Open Aether Files",[this]{app_.appearanceBridge().launchTools(hwnd_,false);});
+ c.text(L"WINDOWS APPEARANCE Â· OPT-IN",box(222,y+162,width,25),theme_.muted,10,true);
+ toggle(c,y+200,L"Sync Windows light / dark mode",L"User-level Windows preferences; Explorer and compatible apps decide how to respond.",options.windowsMode,[options,update]()mutable{options.windowsMode=!options.windowsMode;update(options);});
+ toggle(c,y+278,L"Sync Windows accent color",L"Title-bar accent preferences. Explorer's content layout and custom app controls are not reskinned.",options.windowsAccent,[options,update]()mutable{options.windowsAccent=!options.windowsAccent;update(options);});
+ toggle(c,y+356,L"Theme supported window frames",L"Dark title bars, supported colors and corners. Per-app rules below affect frames only.",options.frames,[options,update]()mutable{options.frames=!options.frames;update(options);});
+ toggle(c,y+434,L"Restore Windows appearance on normal exit",L"Journaled original values are restored unless changed elsewhere. After a crash, use Restore here.",options.restoreOnExit,[options,update]()mutable{options.restoreOnExit=!options.restoreOnExit;update(options);});
+ button(c,box(220,y+518,half,36),L"Apply theme again",[options,update]{update(options);});button(c,box(232+half,y+518,half,36),L"Restore Windows / profiles",[this]{app_.appearanceBridge().restore(app_.theme());invalidate();});
+ c.text(L"PER-APP WINDOW FRAME RULES",box(222,y+588,width,25),theme_.muted,10,true);button(c,box(220,y+628,half,34),L"Add running app ruleâ€¦",[this,options,update]()mutable{std::set<std::wstring> names;for(const auto& w:app_.windows())if(!w.path.empty())names.insert(win::lower(std::filesystem::path(w.path).filename().wstring()));if(names.empty()){win::message(hwnd_,L"Open an application first, then add it here.");return;}HMENU menu=CreatePopupMenu();int id=1;std::vector<std::wstring> choices;for(const auto& name:names){if(choices.size()>=64)break;AppendMenuW(menu,MF_STRING,id++,name.c_str());choices.push_back(name);}POINT point{};GetCursorPos(&point);auto selected=TrackPopupMenu(menu,TPM_RETURNCMD|TPM_NONOTIFY,point.x,point.y,0,hwnd_,nullptr);DestroyMenu(menu);if(selected>0&&selected<=choices.size()&&options.rules.size()<64){auto name=win::utf8(choices[selected-1]);if(std::none_of(options.rules.begin(),options.rules.end(),[&](const auto& r){return r.executable==name;}))options.rules.push_back({name,FrameMode::Follow});update(options);}});
+ button(c,box(232+half,y+628,half,34),L"Clear app rules",[options,update]()mutable{options.rules.clear();update(options);});
+ c.text(L"Unlisted apps follow Aether while frame theming is enabled. Custom-drawn title bars may ignore these attributes.",box(222,y+678,width,48),theme_.muted,11);float row=y+740;const wchar_t* modes[]={L"Follow Aether",L"Light frame",L"Dark frame",L"Leave unchanged"};for(std::size_t n=0;n<options.rules.size();++n){c.text(win::wide(options.rules[n].executable),box(222,row,width-214,36),theme_.foreground,12,true);button(c,box(220+width-208,row,208,34),modes[static_cast<int>(options.rules[n].mode)],[options,update,n]()mutable{options.rules[n].mode=static_cast<FrameMode>((static_cast<int>(options.rules[n].mode)+1)%4);update(options);});row+=48;}
+ c.text(win::wide(app_.appearanceBridge().notice()),box(222,row+20,width,70),theme_.muted,11);
+}
+}

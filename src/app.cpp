@@ -19,11 +19,11 @@
 #include "platform/identity.hpp"
 namespace aether {
 namespace {
-constexpr UINT StatusTimer=1,ReconcileTimer=2,EventsTimer=3,RecoveryTimer=4,WorkspaceTimer=5;
+constexpr UINT StatusTimer=1,ReconcileTimer=2,EventsTimer=3,RecoveryTimer=4,WorkspaceTimer=5,AppearanceTimer=6;
 constexpr int LauncherHotkey=1,EditorHotkey=2,RecoveryHotkey=3;
-constexpr UINT WindowsTapMessage=WM_APP+42;
+constexpr UINT WindowsTapMessage=WM_APP+42,AppearanceApplyMessage=WM_APP+156;
 }
-App::App(win::ProviderProcessOptions providers,win::ProviderProcessOptions wallpaperProviders,win::ProviderProcessOptions pluginProviders):icons_(providers),catalog_(providers),shell_(providers),wallpaper_(wallpaperProviders),pluginProviders_(std::move(pluginProviders)){config_=win::loadConfig(firstRun_);icons_.setPack(config_.iconPack);}
+App::App(win::ProviderProcessOptions providers,win::ProviderProcessOptions wallpaperProviders,win::ProviderProcessOptions pluginProviders):icons_(providers),catalog_(providers),shell_(providers),wallpaper_(wallpaperProviders),pluginProviders_(std::move(pluginProviders)){config_=win::loadConfig(firstRun_);icons_.setPack(config_.iconPack);appearance_=std::make_unique<win::AppearanceBridge>();}
 App::~App(){shutdown();}
 int App::run(){
  // Seal the physical desktop before the first Aether window or reservation.
@@ -80,20 +80,31 @@ int App::run(){
  }
  if(!quitRequested_){
   markLifecycle(AppLifecyclePhase::Ready);
+  // Preserve the pre-Aether native capture and startup hidden proof before
+  // Windows restyles its own UI. Appearance settlement runs in the live pump.
+  appearanceReady_=true;PostMessageW(controller_,AppearanceApplyMessage,0,0);
   if(!windowsKey_.start(controller_,WindowsTapMessage,[this]{return running_&&!paused_&&!quitRequested_&&!interactionDepth_&&config_.hideTaskbar&&taskbar_.enabled();}))
    win::log("Windows-key Activities hook unavailable; Ctrl+Alt+Space remains available.");
  }
- MSG message{};BOOL result=0;
- while((result=GetMessageW(&message,nullptr,0,0))>0){TranslateMessage(&message);DispatchMessageW(&message);}
+ MSG message{};BOOL result=0;ULONGLONG progressHeartbeat=0;
+ while((result=GetMessageW(&message,nullptr,0,0))>0){
+  TranslateMessage(&message);DispatchMessageW(&message);
+  // WM_TIMER has lower priority than posted shell/layout traffic. Renew only
+  // after a completed main-loop dispatch, so a busy responsive queue remains
+  // live while a blocked or suspended UI thread still expires normally.
+  const auto now=GetTickCount64();
+  if(running_&&!paused_&&!quitRequested_&&config_.hideTaskbar&&now-progressHeartbeat>=1000){progressHeartbeat=now;taskbar_.heartbeat(true);}
+ }
  int exitCode=result<0?1:static_cast<int>(message.wParam);shutdown();return exitCode;
 }
 void App::shutdown(){
+ if(appearance_)appearance_->stop();
  if(!controller_)return;windowsKey_.stop();running_=false;quitRequested_=true;taskbarSessionSuspended_=false;markLifecycle(AppLifecyclePhase::RestoringDesktop);
  // Withdraw all owned reservations before either recovery owner restores.
  workspaces_.unwatch();events_.stop();withdrawPanels();marketplace_.reset();liveWallpaper_.reset();if(extensionRuntime_)extensionRuntime_->shutdown();extensions_.reset();backgrounds_.reset();dockFlyout_.reset();panels_.clear();
  quick_.reset();activities_.reset();editor_.reset();looks_.reset();
  taskbarRetirementPending_=!taskbar_.setEnabled(false);restoreWorkspace();
- for(UINT id:{StatusTimer,ReconcileTimer,EventsTimer,RecoveryTimer,WorkspaceTimer})KillTimer(controller_,id);
+ for(UINT id:{StatusTimer,ReconcileTimer,EventsTimer,RecoveryTimer,WorkspaceTimer,AppearanceTimer})KillTimer(controller_,id);
  for(int id:{LauncherHotkey,EditorHotkey,RecoveryHotkey,20,21,22,23,24,25,26,40,41,42,43,50,51,52,53,54,55,56,57,58})UnregisterHotKey(controller_,id);
  WTSUnRegisterSessionNotification(controller_);
  NOTIFYICONDATAW n{};n.cbSize=sizeof(n);n.hWnd=controller_;n.uID=1;Shell_NotifyIconW(NIM_DELETE,&n);
@@ -105,7 +116,7 @@ void App::shutdown(){
  markLifecycle(AppLifecyclePhase::SavingDiagnostics);
  try{const auto& stats=collector_.statistics();std::ostringstream data;
   data<<"{\n\"WindowSnapshots\":"<<stats.snapshots<<",\n\"PathQueries\":"<<stats.pathQueries<<",\n\"IdentityQueries\":"<<stats.identityQueries<<",\n\"PathCacheHits\":"<<stats.pathCacheHits<<",\n\"IdentityCacheHits\":"<<stats.identityCacheHits<<",\n\"WindowScanMilliseconds\":"<<stats.totalMilliseconds<<",\n\"UnchangedSnapshots\":"<<unchangedSnapshots_<<",\n\"LayoutPasses\":"<<layoutPasses_<<",\n\"StatusPolls\":"<<statusPolls_<<",\n\"TilingPlans\":"<<tiling_.statistics().plans<<",\n\"TilingMoves\":"<<tiling_.statistics().moves<<",\n\"TilingReleased\":"<<tiling_.statistics().released<<",\n\"TilingFailures\":"<<tiling_.statistics().failures<<"\n}\n";
-  win::writeAtomic(win::configDirectory()/L"diagnostics.json",data.str());
+  win::writeDiagnostics(win::configDirectory()/L"diagnostics.json",data.str());
  }catch(...){win::log("Local performance counters could not be saved.");}
  // Remove the final owned window before the last local workspace check.
  // Tray/window removal can cause later Shell reflow even after appbars detach.
@@ -163,7 +174,7 @@ win::Monitor App::display(const std::wstring& name) const{
 }
 std::vector<DockGroup> App::dockGroups(const std::wstring& name) const{
  std::vector<TaskRecord> tasks;tasks.reserve(windows_.size());
- for(const auto& w:windows_)tasks.push_back({win::utf8(w.title),win::utf8(w.path),win::utf8(w.identity),win::utf8(w.display),w.active});
+ for(const auto& w:windows_)tasks.push_back({win::utf8(w.title),w.identity==L"aether.terminal"?"aether://terminal":win::utf8(w.path),win::utf8(w.identity),win::utf8(w.display),w.active});
  auto groups=groupDock(config_.pins,tasks,win::utf8(name),config_.forDisplay(win::utf8(name)).monitorOnly);
  if(catalogSnapshot_)for(auto& group:groups)if(group.pinIndex<0&&group.app.identity.rfind("aumid:",0)==0){
   auto identity=win::lower(win::wide(group.app.identity));auto found=std::find_if(catalogSnapshot_->begin(),catalogSnapshot_->end(),[&](const win::Application& app){return win::lower(app.identity)==identity;});
@@ -173,6 +184,7 @@ std::vector<DockGroup> App::dockGroups(const std::wstring& name) const{
 }
 void App::layout(bool rebuild){
  if(!running_||quitRequested_||workspaceQuiesced_)return;
+ if(appearanceSettleUntil_){const auto now=GetTickCount64();if(now<appearanceSettleUntil_){appearanceRebuild_=appearanceRebuild_||rebuild;SetTimer(controller_,AppearanceTimer,static_cast<UINT>(appearanceSettleUntil_-now),nullptr);return;}appearanceSettleUntil_=0;KillTimer(controller_,AppearanceTimer);rebuild=rebuild||appearanceRebuild_;appearanceRebuild_=false;}
  if(config_.hideTaskbar&&(!taskbar_.enabled()||!taskbar_.healthy())){updateTaskbarFailure();return;}
  if(layoutInProgress_){scheduleLayout();return;}
  layoutInProgress_=true;struct LayoutScope{bool& busy;~LayoutScope(){busy=false;}} layoutScope{layoutInProgress_};
@@ -237,10 +249,12 @@ void App::endInteraction(){
 void App::scheduleLayout(){if(controller_&&!relayoutPending_){relayoutPending_=true;PostMessageW(controller_,win::RelayoutMessage,0,0);}}
 void App::refreshWindows(bool reconcile){
  if(paused_)return;events_.acknowledge();for(auto hwnd:events_.takeIdentityInvalidations())collector_.invalidateIdentity(hwnd);for(auto hwnd:events_.takeLifecycleChanges()){collector_.forgetWindow(hwnd);tiling_.forgetWindow(hwnd);}refreshTaskbar();auto latest=collector_.snapshot(reconcile);
+ const auto toolsPath=(win::executablePath().parent_path()/L"AetherTools.exe").wstring();
+ for(auto& window:latest)if(_wcsicmp(window.path.c_str(),toolsPath.c_str())==0&&reinterpret_cast<ULONG_PTR>(GetPropW(window.hwnd,L"Aether.Tools.Kind"))==1)window.identity=L"aether.terminal";
  queueShellMetadata();for(auto hwnd:events_.takeUserMoveEnds())tiling_.observeUserMove(hwnd);
  if(latest==windows_){++unchangedSnapshots_;updateTiling();return;}
  auto activeTitle=[](const std::vector<win::Window>& windows){for(const auto& window:windows)if(window.active)return window.title;return std::wstring{};};bool titleChanged=activeTitle(windows_)!=activeTitle(latest);
- windows_=std::move(latest);events_.acknowledge(windows_);if(!panels_.empty())layout();if(titleChanged)for(auto& panel:panels_)if(panel->top())panel->invalidate();if(extensionRuntime_)extensionRuntime_->update();
+ windows_=std::move(latest);if(running_&&appearanceReady_)appearance_->reconcile(windows_,theme());events_.acknowledge(windows_);if(!panels_.empty())layout();if(titleChanged)for(auto& panel:panels_)if(panel->top())panel->invalidate();if(extensionRuntime_)extensionRuntime_->update();
 }
 void App::workspaceAppearanceChanged(){if(!running_||quitRequested_)return;workspaces_.refresh();updateWorkspaceWallpaper();if(activities_)activities_->update();}
 void App::updateWorkspaceWallpaper(){
@@ -288,7 +302,7 @@ void App::updateStatus(){
  status_=std::move(next);if(changed){for(auto& panel:panels_)if(panel->top())panel->invalidate();if(quick_)quick_->invalidate();if(extensionRuntime_)extensionRuntime_->update();}
 }
 void App::redraw(){
- if(paused_)return;for(auto& panel:panels_)panel->invalidate();
+ if(paused_)return;if(running_&&!quitRequested_&&appearanceReady_){appearance_->apply(theme());appearance_->reconcile(windows_,theme());}for(auto& panel:panels_)panel->invalidate();
  if(activities_)activities_->invalidate();if(editor_)editor_->invalidate();if(looks_)looks_->update();if(quick_)quick_->invalidate();if(backgrounds_)backgrounds_->invalidate();if(extensions_)extensions_->update();if(extensionRuntime_)extensionRuntime_->update();
 }
 void App::apply(Config next){
@@ -367,7 +381,7 @@ void App::openExtensions(){
  if(!extensions_)extensions_=std::make_unique<ui::Extensions>(graphics_,*this);extensions_->open(display());
 }
 void App::activateGroup(const DockGroup& group,bool launchNew){
- if(launchNew||group.tasks.empty()){launchTarget(controller_,win::wide(group.app.target));return;}
+ if(launchNew||group.tasks.empty()){if(group.app.target=="aether://terminal")appearance_->launchTools(controller_,true);else launchTarget(controller_,win::wide(group.app.target));return;}
  std::vector<win::Window> candidates;
  for(auto index:group.tasks)if(index<windows_.size()&&win::windowAlive(windows_[index].hwnd,windows_[index].pid))candidates.push_back(windows_[index]);
  if(candidates.empty())return;
@@ -393,6 +407,7 @@ void App::choosePin(HWND owner){
 }
 void App::launchTarget(HWND owner,const std::wstring& target){
  if(quitRequested_||!running_||target.empty())return;
+ if(target==L"aether://terminal"){appearance_->launchTools(owner,true);return;}
  if(!shell_.requestLaunch(owner,target))win::log("Launch queue unavailable or full.");
 }
 void App::refreshPinIdentities(){
@@ -550,11 +565,11 @@ void App::globalMenu(HWND owner,POINT point){
  AppendMenuW(menu,MF_STRING,2,L"Desktop Studio\tCtrl+Alt+E");
  AppendMenuW(menu,MF_STRING,8,L"Looks and widgets");AppendMenuW(menu,MF_STRING,9,L"Marketplace");
  AppendMenuW(menu,MF_STRING,6,L"Backgrounds");AppendMenuW(menu,MF_STRING,7,L"Native extensions");
- AppendMenuW(menu,MF_STRING,3,L"Quick settings");AppendMenuW(menu,MF_SEPARATOR,0,nullptr);
+ AppendMenuW(menu,MF_STRING,10,L"Aether Terminal");AppendMenuW(menu,MF_STRING,11,L"Aether Files");AppendMenuW(menu,MF_STRING,3,L"Quick settings");AppendMenuW(menu,MF_SEPARATOR,0,nullptr);
  AppendMenuW(menu,MF_STRING,4,L"Restore Windows taskbar\tCtrl+Alt+F12");
  AppendMenuW(menu,MF_STRING,5,L"Quit Aether UI");
  SetForegroundWindow(owner);auto choice=TrackPopupMenuEx(menu,TPM_RETURNCMD|TPM_NONOTIFY|TPM_RIGHTBUTTON,point.x,point.y,owner,nullptr);DestroyMenu(menu);PostMessageW(owner,WM_NULL,0,0);
- switch(choice){case 1:openActivities();break;case 2:openEditor();break;case 3:openQuick();break;case 4:restoreNative();break;case 5:quit();break;case 6:openBackgrounds();break;case 7:openExtensions();break;case 8:openLooks();break;case 9:openMarketplace();break;default:break;}
+ switch(choice){case 1:openActivities();break;case 2:openEditor();break;case 3:openQuick();break;case 4:restoreNative();break;case 5:quit();break;case 6:openBackgrounds();break;case 7:openExtensions();break;case 8:openLooks();break;case 9:openMarketplace();break;case 10:appearance_->launchTools(controller_,true);break;case 11:appearance_->launchTools(controller_,false);break;default:break;}
 }
 LRESULT CALLBACK App::procedure(HWND h,UINT m,WPARAM w,LPARAM l){
  App* app=reinterpret_cast<App*>(GetWindowLongPtrW(h,GWLP_USERDATA));
@@ -564,12 +579,15 @@ LRESULT CALLBACK App::procedure(HWND h,UINT m,WPARAM w,LPARAM l){
  return DefWindowProcW(h,m,w,l);
 }
 LRESULT App::event(UINT m,WPARAM w,LPARAM l){
+ if(m==win::appearanceTransitionMessage()){if(quitRequested_||paused_||!taskbar_.settleAppearance())return 0;appearanceSettleUntil_=GetTickCount64()+2500;SetTimer(controller_,AppearanceTimer,2500,nullptr);return 1;}
  if(taskbarCreated_&&m==taskbarCreated_){if(quitRequested_||!running_)return 0;registerTray();if(paused_)return 0;refreshTaskbar();workspaces_.unwatch();workspaces_.refresh();SetPropW(controller_,L"Aether.Workspace.Notifications",reinterpret_cast<HANDLE>(static_cast<ULONG_PTR>(workspaces_.watch(controller_))));refreshWindows(true);layout(true);return 0;}
  switch(m){
  case WM_CLOSE:markLifecycle(AppLifecyclePhase::CloseRequested);quitRequested_=true;taskbarSessionSuspended_=false;if(interactionDepth_)EndMenu();retireDesktop();if(!interactionDepth_)PostQuitMessage(quitExitCode_);return 0;
  case WM_ENDSESSION:if(w){quitRequested_=true;taskbarSessionSuspended_=false;if(interactionDepth_)EndMenu();retireDesktop();}else confirmActiveTaskbar();return 0;
  case WM_QUERYENDSESSION:confirmActiveTaskbar();return TRUE;
  case win::OpenEditorMessage:openEditor();return 0;
+ case AppearanceApplyMessage:if(running_&&!paused_&&!quitRequested_){appearance_->apply(theme());appearance_->reconcile(windows_,theme());}return 0;
+ case WM_APP+155:openEditor();if(editor_){if(w)editor_->openTerminal();else editor_->openIntegration();}return 0;
  case win::ApplyMessage:restoreNative();return 0;
  case win::RelayoutMessage:relayoutPending_=false;layout();return 0;
  case win::RefreshMessage:if(!paused_&&!quitRequested_){for(auto& panel:panels_)panel->refreshHover();SetTimer(controller_,EventsTimer,100,nullptr);}return 0;
@@ -581,8 +599,14 @@ LRESULT App::event(UINT m,WPARAM w,LPARAM l){
  case win::PluginDataMessage:if(!paused_&&!quitRequested_&&extensionRuntime_)extensionRuntime_->update();return 0;
  case win::WallpaperMessage:for(const auto& completion:wallpaper_.takeCompletions())if(!quitRequested_){automaticColorsCompletion(completion);if(backgrounds_)backgrounds_->update(completion);if(editor_)editor_->paletteCompletion(completion);}return 0;
  case WM_DISPLAYCHANGE:scheduleLayout();return 0;
- case WM_SETTINGCHANGE:scheduleLayout();return 0;
+ case WM_SETTINGCHANGE:
+  // Palette notifications do not change monitor geometry or reservations.
+  // Re-entering the shell appbar path during a Windows theme transition can
+  // block this UI thread until its independent recovery lease expires.
+  if(w==0&&l&&_wcsicmp(reinterpret_cast<const wchar_t*>(l),L"ImmersiveColorSet")==0)return 0;
+  scheduleLayout();return 0;
  case WM_TIMER:
+  if(w==AppearanceTimer){KillTimer(controller_,AppearanceTimer);if(!quitRequested_)layout();return 0;}
   if(w==RecoveryTimer){
    if(paused_||quitRequested_||!running_)return 0;
    // Detect a dead/revoked helper before deciding whether this timer retires.
@@ -631,7 +655,7 @@ LRESULT App::event(UINT m,WPARAM w,LPARAM l){
    workspaces_.refresh();workspaces_.watch(controller_);
    if(workspaceQuiesced_)resumeWorkspace();
    if(extensionRuntime_)extensionRuntime_->pause(false);events_.pause(false);SetTimer(controller_,StatusTimer,15000,nullptr);SetTimer(controller_,ReconcileTimer,30000,nullptr);updateStatus();refreshWindows(true);layout();
-   confirmActiveTaskbar();
+   confirmActiveTaskbar();PostMessageW(controller_,AppearanceApplyMessage,0,0);
   }
   return 0;
  }

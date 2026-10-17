@@ -15,7 +15,7 @@ class Graphics {
  ComPtr<ID2D1Factory> factory_;ComPtr<IDWriteFactory> writer_;
  std::map<std::tuple<std::wstring,int,int,int,bool,bool>,ComPtr<IDWriteTextFormat>> fonts_;
 public:
- Graphics();ID2D1Factory* factory(){return factory_.Get();}
+ Graphics();D2D1_SIZE_F cellSize(std::wstring_view family,int size);ID2D1Factory* factory(){return factory_.Get();}
  IDWriteTextFormat* font(int size,bool bold=false,int align=0,bool symbol=false,std::wstring_view family=L"Segoe UI",int weight=400,bool italic=false);
 };
 class Canvas {

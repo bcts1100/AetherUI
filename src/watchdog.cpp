@@ -53,7 +53,7 @@ int WINAPI wWinMain(HINSTANCE,HINSTANCE,LPWSTR,int){
  if(snapshot->nativeAllowed&&!hook){eventSnapshot=nullptr;eventRefresh=nullptr;UnmapViewOfFile(snapshot);return 6;}
  InterlockedExchange64(&snapshot->helperHeartbeat,static_cast<LONG64>(GetTickCount64()));
  if(!SetEvent(ready.value)){if(hook)UnhookWinEvent(hook);eventSnapshot=nullptr;eventRefresh=nullptr;UnmapViewOfFile(snapshot);return 6;}
- DWORD result=WAIT_TIMEOUT;bool restore=false;
+ DWORD result=WAIT_TIMEOUT;bool restore=false,pendingRefresh=false;ULONGLONG settleUntil=0,settleBegan=0;
  for(;;){
   InterlockedExchange64(&snapshot->helperHeartbeat,static_cast<LONG64>(GetTickCount64()));
   // Lifetime/stop and lease revocation precede every pending hide command.
@@ -62,7 +62,14 @@ int WINAPI wWinMain(HINSTANCE,HINSTANCE,LPWSTR,int){
   if(lifetime==WAIT_FAILED){result=WAIT_FAILED;restore=true;break;}
   if(load(&snapshot->revoked)){result=WAIT_OBJECT_0;restore=true;break;}
   if(recoveryLeaseExpired(snapshot,GetTickCount64())){helperDiagnostic("controller-lease-expired");result=WAIT_OBJECT_0;restore=true;break;}
-  result=MsgWaitForMultipleObjectsEx(4,waits,500,QS_ALLINPUT,MWMO_INPUTAVAILABLE);
+  if(settleUntil&&!maintainRecoveryVisibility(snapshot,parent.value,stop.value)){restore=true;break;}
+  if(settleUntil&&GetTickCount64()>=settleUntil){settleUntil=0;settleBegan=0;pendingRefresh=true;}
+  if(pendingRefresh&&!settleUntil&&snapshot->nativeAllowed&&load(&snapshot->armed)){
+   pendingRefresh=false;
+   if(!runNativeRecoveryCommand(snapshot,RecoveryCommand::Refresh,GetTickCount64(),parent.value,stop.value))helperDiagnostic("settled-refresh-failed");
+   if(load(&snapshot->revoked)){restore=true;break;}
+  }
+  result=MsgWaitForMultipleObjectsEx(4,waits,settleUntil?16:500,QS_ALLINPUT,MWMO_INPUTAVAILABLE);
   if(result==WAIT_OBJECT_0||result==WAIT_OBJECT_0+1){restore=true;break;}
   if(result==WAIT_FAILED){restore=true;break;}
   if(result==WAIT_OBJECT_0+4){MSG message{};unsigned drained=0;while(drained++<128&&PeekMessageW(&message,nullptr,0,0,PM_REMOVE)){TranslateMessage(&message);DispatchMessageW(&message);}continue;}
@@ -70,9 +77,13 @@ int WINAPI wWinMain(HINSTANCE,HINSTANCE,LPWSTR,int){
    const LONG sequence=load(&snapshot->commandSequence);const auto request=static_cast<RecoveryCommand>(load(&snapshot->command));
    if(sequence!=load(&snapshot->acknowledgedSequence)){
     bool succeeded=false;
-    if(request==RecoveryCommand::Restore){if(snapshot->nativeAllowed)succeeded=runNativeRecoveryCommand(snapshot,request,GetTickCount64(),parent.value,stop.value);else if(load(&snapshot->armed)==0){InterlockedExchange(&snapshot->revoked,1);succeeded=true;}}
-    else if(snapshot->nativeAllowed)succeeded=runNativeRecoveryCommand(snapshot,request,GetTickCount64(),parent.value,stop.value);
-    if(request==RecoveryCommand::Arm||request==RecoveryCommand::Refresh||request==RecoveryCommand::ConfirmHidden){
+    if(request==RecoveryCommand::AppearanceSettle&&snapshot->nativeAllowed&&load(&snapshot->armed)&&!load(&snapshot->revoked)){
+     const auto now=GetTickCount64();if(!settleBegan)settleBegan=now;
+     if(now-settleBegan<6000){settleUntil=std::min(now+2500,settleBegan+6000);pendingRefresh=true;succeeded=true;}
+    }else if(request==RecoveryCommand::Refresh&&settleUntil){pendingRefresh=true;succeeded=false;}
+    else if(request==RecoveryCommand::Restore){settleUntil=0;settleBegan=0;pendingRefresh=false;if(snapshot->nativeAllowed)succeeded=runNativeRecoveryCommand(snapshot,request,GetTickCount64(),parent.value,stop.value);else if(load(&snapshot->armed)==0){InterlockedExchange(&snapshot->revoked,1);succeeded=true;}}
+    else if(snapshot->nativeAllowed){settleUntil=0;settleBegan=0;pendingRefresh=false;succeeded=runNativeRecoveryCommand(snapshot,request,GetTickCount64(),parent.value,stop.value);}
+    if(request==RecoveryCommand::Arm||request==RecoveryCommand::Refresh||request==RecoveryCommand::ConfirmHidden||request==RecoveryCommand::AppearanceSettle){
      const DWORD priority=WaitForMultipleObjects(2,waits,FALSE,0);
      if(priority!=WAIT_TIMEOUT||load(&snapshot->revoked)||recoveryLeaseExpired(snapshot,GetTickCount64())){
       InterlockedExchange(&snapshot->revoked,1);succeeded=false;
@@ -87,7 +98,10 @@ int WINAPI wWinMain(HINSTANCE,HINSTANCE,LPWSTR,int){
     if(request!=RecoveryCommand::Refresh||!succeeded)helperDiagnostic("command-ack-published",0,0,static_cast<LONG>(request),sequence,succeeded?1:0);
    }
   }else if(result==WAIT_OBJECT_0+3&&snapshot->nativeAllowed&&load(&snapshot->armed)&&!load(&snapshot->revoked)){
-   if(!runNativeRecoveryCommand(snapshot,RecoveryCommand::Refresh,GetTickCount64(),parent.value,stop.value))helperDiagnostic("event-refresh-failed");
+   // Visibility enforcement does not wait for theme/appbar settlement.
+   if(!maintainRecoveryVisibility(snapshot,parent.value,stop.value)){restore=true;break;}
+   if(settleUntil){pendingRefresh=true;}
+   else if(!runNativeRecoveryCommand(snapshot,RecoveryCommand::Refresh,GetTickCount64(),parent.value,stop.value))helperDiagnostic("event-refresh-failed");
   }
   if(load(&snapshot->revoked)){restore=true;break;}
  }

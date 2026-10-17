@@ -16,7 +16,7 @@
 // on supervisor death/deadline after stopping only recorded owned processes.
 namespace {
 using namespace aether;using namespace aether::win;
-constexpr DWORD StateMagic=0x4E545238,StateVersion=1;
+constexpr DWORD StateMagic=0x4E545238,StateVersion=2;
 constexpr UINT ArmCommand=WM_APP+71,RestoreCommand=WM_APP+72,BlockCommand=WM_APP+73,
  ProbeCommand=WM_APP+74,EnableCommand=WM_APP+75,CloseCommand=WM_APP+76,ArmUnpublishedCommand=WM_APP+77,HeartbeatTimer=1;
 constexpr LONG PhaseReady=1,PhaseArmed=2,PhaseBlocked=3,PhaseResumed=4,PhaseArming=5,PhaseArmUnpublished=6;
@@ -24,6 +24,7 @@ constexpr LONG PhaseReady=1,PhaseArmed=2,PhaseBlocked=3,PhaseResumed=4,PhaseArmi
 constexpr DWORD LeaseMilliseconds=TaskbarGuardOptions{}.leaseMilliseconds,SentinelLifetime=120000;
 struct BarBefore {std::uint64_t hwnd{};DWORD pid{};ULONGLONG birth{};LONG visible{},primary{};};
 struct MonitorBefore {wchar_t device[CCHDEVICENAME]{};RECT bounds{},work{};};
+struct VisualBefore {DWORD exStyle{},key{},flags{};BYTE alpha=255;};
 struct AcceptanceState {
  DWORD magic=StateMagic,version=StateVersion,bytes=sizeof(AcceptanceState);
  DWORD barCount{},monitorCount{},taskbarState{};
@@ -32,6 +33,7 @@ struct AcceptanceState {
  alignas(8) volatile LONG64 fixtureBirth=0,helperBirth=0,fixtureWindow=0;
  volatile LONG lastCommand=-1,sentinelTriggered=0,sentinelRestored=0,fixtureAccepted=0,sentinelDiscoveries=0;
  DWORD supervisorPid{};ULONGLONG supervisorBirth{},deadline{};
+ VisualBefore visual[32]{};
 };
 struct Child {
  Handle process,thread;DWORD pid{};ULONGLONG birth{};
@@ -105,7 +107,9 @@ void describeNativeBars(){
 }std::vector<HWND> independentlyEnumeratedBars(){std::vector<HWND> bars;EnumWindows([](HWND h,LPARAM p)->BOOL{if(taskbarClass(h))reinterpret_cast<std::vector<HWND>*>(p)->push_back(h);return TRUE;},reinterpret_cast<LPARAM>(&bars));for(const auto* name:{L"Shell_TrayWnd",L"Shell_SecondaryTrayWnd"}){HWND after=nullptr;for(int i=0;i<33;++i){auto h=FindWindowExW(nullptr,after,name,nullptr);if(!h)break;after=h;if(std::find(bars.begin(),bars.end(),h)==bars.end())bars.push_back(h);}}return bars;}
 bool captureBefore(AcceptanceState& state){
  struct Enumeration{AcceptanceState* state;bool overflow=false,untrusted=false;};Enumeration enumeration{&state};
- for(auto window:independentlyEnumeratedBars()){bool primary=false;if(!taskbarClass(window,&primary))continue;DWORD pid=0;ULONGLONG born=0;if(!genuineBar(window,&pid,&born)){enumeration.untrusted=true;continue;}if(state.barCount==32){enumeration.overflow=true;break;}state.bars[state.barCount++]={reinterpret_cast<std::uintptr_t>(window),pid,born,IsWindowVisible(window)?1L:0L,primary?1L:0L};}
+ for(auto window:independentlyEnumeratedBars()){bool primary=false;if(!taskbarClass(window,&primary))continue;DWORD pid=0;ULONGLONG born=0;if(!genuineBar(window,&pid,&born)){enumeration.untrusted=true;continue;}if(state.barCount==32){enumeration.overflow=true;break;}const auto index=state.barCount++;state.bars[index]={reinterpret_cast<std::uintptr_t>(window),pid,born,IsWindowVisible(window)?1L:0L,primary?1L:0L};
+  auto& visual=state.visual[index];visual.exStyle=static_cast<DWORD>(GetWindowLongPtrW(window,GWL_EXSTYLE));
+  if((visual.exStyle&WS_EX_LAYERED)&&!GetLayeredWindowAttributes(window,&visual.key,&visual.alpha,&visual.flags))return false;}
  struct MonitorEnumeration{AcceptanceState* state;bool failed=false;};MonitorEnumeration monitors{&state};
  EnumDisplayMonitors(nullptr,nullptr,[](HMONITOR monitor,HDC,LPRECT,LPARAM value)->BOOL{
   auto& enumeration=*reinterpret_cast<MonitorEnumeration*>(value);MONITORINFOEXW info{};info.cbSize=sizeof(info);
@@ -132,7 +136,22 @@ HWND originalPrimary(const AcceptanceState& state){
 bool barSetUnchanged(const AcceptanceState& state){
  const auto bars=independentlyEnumeratedBars();if(bars.size()!=state.barCount)return false;for(auto h:bars){bool found=false;for(DWORD i=0;i<state.barCount;++i)if(state.bars[i].hwnd==reinterpret_cast<std::uintptr_t>(h)&&sameBar(state.bars[i]))found=true;if(!found)return false;}return true;
 }
+bool presentationRestored(const AcceptanceState& state){
+ for(DWORD i=0;i<state.barCount;++i){
+  if(!sameBar(state.bars[i]))return false;auto h=reinterpret_cast<HWND>(static_cast<std::uintptr_t>(state.bars[i].hwnd));const auto& v=state.visual[i];
+  if((GetWindowLongPtrW(h,GWL_EXSTYLE)&WS_EX_LAYERED)!=(v.exStyle&WS_EX_LAYERED))return false;
+  if(v.exStyle&WS_EX_LAYERED){COLORREF key=0;BYTE alpha=0;DWORD flags=0;if(!GetLayeredWindowAttributes(h,&key,&alpha,&flags)||flags!=v.flags||((flags&LWA_ALPHA)&&alpha!=v.alpha)||((flags&LWA_COLORKEY)&&key!=v.key))return false;}
+ }return true;
+}
+void restoreRecordedPresentation(const AcceptanceState& state,HWND h){
+ for(DWORD i=0;i<state.barCount;++i)if(state.bars[i].hwnd==reinterpret_cast<std::uintptr_t>(h)&&sameBar(state.bars[i])){
+  const auto& v=state.visual[i];const auto style=GetWindowLongPtrW(h,GWL_EXSTYLE);
+  if(v.exStyle&WS_EX_LAYERED){if(!(style&WS_EX_LAYERED))SetWindowLongPtrW(h,GWL_EXSTYLE,style|WS_EX_LAYERED);SetLayeredWindowAttributes(h,v.key,v.alpha,v.flags);}
+  else if(style&WS_EX_LAYERED)SetWindowLongPtrW(h,GWL_EXSTYLE,style&~static_cast<LONG_PTR>(WS_EX_LAYERED));return;
+ }
+}
 bool barsRestored(const AcceptanceState& state){
+ if(!presentationRestored(state))return false;
  if(!validState(&state))return false;const auto primary=originalPrimary(state);if(!primary)return false;
  APPBARDATA data{sizeof(data)};data.hWnd=primary;if(SHAppBarMessage(ABM_GETSTATE,&data)!=state.taskbarState)return false;
  // Shell queries can process pending visibility changes. Validate the exact
@@ -142,12 +161,14 @@ bool barsRestored(const AcceptanceState& state){
   ||(IsWindowVisible(reinterpret_cast<HWND>(static_cast<std::uintptr_t>(state.bars[i].hwnd)))!=FALSE)!=(state.bars[i].visible!=0))return false;
  return true;
 }
-bool barsHidden(const AcceptanceState& state){
+bool barsHidden(const AcceptanceState& state,bool requireInvisible=true){
  if(!validState(&state))return false;const auto primary=originalPrimary(state);if(!primary)return false;
  APPBARDATA data{sizeof(data)};data.hWnd=primary;if(SHAppBarMessage(ABM_GETSTATE,&data)!=(state.taskbarState|ABS_AUTOHIDE))return false;
  if(!originalPrimary(state)||!barSetUnchanged(state))return false;
  for(DWORD i=0;i<state.barCount;++i)if(!sameBar(state.bars[i])
-  ||IsWindowVisible(reinterpret_cast<HWND>(static_cast<std::uintptr_t>(state.bars[i].hwnd))))return false;
+  ||(requireInvisible&&IsWindowVisible(reinterpret_cast<HWND>(static_cast<std::uintptr_t>(state.bars[i].hwnd)))))return false;
+ for(DWORD i=0;i<state.barCount;++i){auto h=reinterpret_cast<HWND>(static_cast<std::uintptr_t>(state.bars[i].hwnd));COLORREF key=0;BYTE alpha=255;DWORD flags=0;
+  if(!(GetWindowLongPtrW(h,GWL_EXSTYLE)&WS_EX_LAYERED)||!GetLayeredWindowAttributes(h,&key,&alpha,&flags)||!(flags&LWA_ALPHA)||alpha!=0)return false;}
  return true;
 }bool workAreasRestored(const AcceptanceState& state,bool includeWork=true){
  struct Enumeration{const AcceptanceState* state;bool includeWork;DWORD count=0;bool same=true;};Enumeration enumeration{&state,includeWork};
@@ -184,6 +205,7 @@ HWND currentPrimary(const AcceptanceState& state){
  },reinterpret_cast<LPARAM>(&result));return result;
 }
 bool recoveryRestored(const AcceptanceState& state){
+ if(!presentationRestored(state))return false;
  HWND primary=currentPrimary(state);if(!primary)return false;
  APPBARDATA data{sizeof(data)};data.hWnd=primary;if(SHAppBarMessage(ABM_GETSTATE,&data)!=state.taskbarState)return false;
  if(!currentPrimary(state))return false;
@@ -250,7 +272,7 @@ bool requestRecordedVisibility(const AcceptanceState& state,const std::array<Nat
    if(!genuineBar(bar.window,&pid,&born)||pid!=bar.pid||born!=bar.birth)return false;
    // This sole recovery writer runs only after all owned writers are dead.
    // ShowWindow's return is prior visibility; fresh observations prove success.
-   ShowWindow(bar.window,target?SW_SHOWNA:SW_HIDE);
+   restoreRecordedPresentation(state,bar.window);ShowWindow(bar.window,target?SW_SHOWNA:SW_HIDE);
    if(fresh)applied[appliedCount++]=bar;
   }
  }
@@ -913,6 +935,7 @@ void appCase(const wchar_t* name,bool emergency,bool crash,int effects=-1){
  check(test.observeAppHelper(),"actual App: actual watchdog PID, birth and image captured");
  check(waitFor([&]{return barsHidden(*test.state);},8000),"actual App: Windows taskbars are hidden at startup without a toggle");
  DWORD_PTR reply=0;check(test.command(WM_NULL,&reply,500),"actual App: controller remains responsive while replacement is active");
+ DWORD_PTR settling=0;check(test.command(RegisterWindowMessageW(L"Aether.Appearance.Transition.v1"),&settling,1500)&&settling==1,"actual App: normal exit, emergency or crash retains priority during appearance settlement");
  if(emergency){if(test.window())PostMessageW(test.window(),ApplyMessage,0,0);
   check(waitFor([&]{return barsRestored(*test.state);},8000),"actual App: emergency command restores exact native visibility and full appbar state");}
  if(crash){auto helper=test.helper();
@@ -946,6 +969,7 @@ bool appAdmission(SafeCase& test,const wchar_t* name,const char* label,bool hide
 }
 void appHelperCrashCase(){
  SafeCase test;if(!appAdmission(test,L"helper-death","actual App helper death"))return;auto helper=test.helper();
+ DWORD_PTR settling=0;check(test.command(RegisterWindowMessageW(L"Aether.Appearance.Transition.v1"),&settling,1500)&&settling==1,"actual App helper death: bounded appearance settlement acknowledged before helper termination");
  check(helper&&TerminateProcess(helper.value,95)&&WaitForSingleObject(helper.value,5000)==WAIT_OBJECT_0,
   "actual App helper death: only the verified private-profile watchdog is terminated");
  check(test.worker.alive()&&waitFor([&]{return barsRestored(*test.state);},8000),
@@ -957,6 +981,7 @@ void appHelperCrashCase(){
 }
 void appControllerHangCase(){
  SafeCase test;if(!appAdmission(test,L"ui-hang","actual App UI hang"))return;auto helper=test.helper();
+ DWORD_PTR settling=0;check(test.command(RegisterWindowMessageW(L"Aether.Appearance.Transition.v1"),&settling,1500)&&settling==1,"actual App UI hang: appearance settlement does not replace the controller lease");
  {
   SuspendedController blocked(test.worker,test.window());
   if(!check(blocked.active(),"actual App UI hang: suspend only the HWND/PID/birth-verified controller thread"))return;
@@ -1216,11 +1241,15 @@ void appAutoHideStartupCase(){
    &&helper&&WaitForSingleObject(helper.value,0)==WAIT_TIMEOUT
    &&InterlockedCompareExchange(&test.state->helperPid,0,0)==originalHelperPid
    &&InterlockedCompareExchange64(&test.state->helperBirth,0,0)==originalHelperBirth;
-  const bool hidden=barsHidden(*test.state);
+  const bool hidden=barsHidden(*test.state),protectedFromPresentation=barsHidden(*test.state,false);
   std::cout<<"DIAG auto-hide startup sample="<<sample<<"; elapsedMs="<<GetTickCount64()-started
-   <<"; sameOwnedGeneration="<<active<<"; nativeHidden="<<hidden<<std::endl;
-  check(active&&hidden,("actual App auto-hide: strict stable native hiding sample "+std::to_string(sample)).c_str());
+   <<"; sameOwnedGeneration="<<active<<"; nativeHidden="<<hidden<<"; zeroAlphaProtected="<<protectedFromPresentation<<std::endl;
+  // Explorer may issue SHOW during reservation/style callbacks. Require the
+  // independently queried zero-alpha guard on every sample, including SHOW;
+  // the strict logical-hidden check remains required after settlement below.
+  check(active&&protectedFromPresentation,("actual App auto-hide: independently zero-alpha protected sample "+std::to_string(sample)).c_str());
  }
+ check(waitFor([&]{return barsHidden(*test.state);},2500),"actual App auto-hide: strict logical hiding restored after startup callbacks");
  DWORD_PTR reply=0;check(test.command(WM_NULL,&reply,500),"actual App auto-hide: controller remains responsive with the dock auto-hiding");
  test.finish("actual App auto-hide normal exit");
 }

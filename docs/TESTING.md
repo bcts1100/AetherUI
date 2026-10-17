@@ -1,42 +1,44 @@
 # Validation and known limitations
 
-This is a source preview, not a certified production desktop replacement.
+This is a locally tested source preview, not certification across every Windows configuration.
 
-## Last local Windows validation
+## Local Windows validation: 2026-10-17
 
-Visual Studio 2022 x64 Release and Debug builds were warning-free. Each configuration passed 50 registered suites without real pointer/keyboard injection, 207 independent native recovery assertions, and six real preset Apply/Undo cycles. All eight recovery fixtures restored the captured taskbar visibility, complete native taskbar state and both physical monitor work areas, with zero corrective writes and no remaining owners.
+VS2022 x64 Release and Debug all-target builds are clean. The first complete run in each configuration passed 55/57 suites. Accessibility and Customization selected old settings-page names after the navigation redesign. Corrected fixtures passed with Personalization, 3/3 in both builds. All 57 suites therefore have passing coverage across runs, not one uninterrupted 57/57 certification. The full runs included real pointer, keyboard, overview, tool, shell and visible-control overlap checks.
 
-The final native fixture uses the production five-second lease. An earlier two-second test override expired during Shell admission; that retained failure was not counted as passing. Primary and secondary taskbars are discovered through live enumeration plus bounded class lookups, because Windows can omit a valid taskbar from EnumWindows.
+WindowsIntegration, WindowsShellApp and WindowsProviderShutdown each passed three consecutive repeats in both configurations with unchanged deadlines. The final bitmap-rendering correction passed the real tool suite again in both builds (53 Release checks with captures, 41 Debug checks without captures).
 
-Before the last taskbar enumeration correction, Debug passed all 54 suites in one invocation. Release passed 53/54, then its corrected Studio keyboard fixture passed five consecutive runs in both builds. The fixture needed updated Tab counts after adding the sixth navigation page. Those earlier results are not final-binary input certification.
+Terminal checks cover real CMD and PowerShell execution, file redirection, resizing, Ctrl+C cancellation, all ten live designs without restarting the shell, palette contrast and validated local image paths. WSL launches only if already installed; Aether does not install distributions.
 
-## Remaining validation
+Native recovery is opt-in and separate from CTest. All eight final Release/Debug groups passed: 216 native assertions per configuration across the native guard, actual startup, appbar-only and effects. Independent observers verify original visibility, layered composition, complete native state and physical monitor work areas. A separate outside-job sentinel protects failures. Intentional sentinel calibration is distinguished from normal cases, which must restore without emergency intervention. Machine-specific snapshots, profiles and raw logs are omitted from this repository.
 
-- Final input-sensitive suites: WindowsDockHover, WindowsKeyHook, WindowsOverview and WindowsPersonalization.
-- Extended real-pointer widget stability and repeated live resize/capture gestures. One owned gesture run passed; a later resize assertion failed. No repeated gesture acceptance is claimed.
-- Mixed-DPI, broader Windows-version compatibility, GPU/frame pacing and long-duration resource behavior.
-- Failure-injection testing of preset rollback writes.
+An earlier startup recovery run failed its 500 ms responsiveness check, while exact emergency recovery passed. An unnecessary synchronous durability flush in the generated tools-theme cache was removed. Settings and recovery journals retain durable writes. Earlier failures remain in staged evidence rather than being reclassified as passing. A subsequent 97/98 startup run exposed a logical SHOW during a guarded transition. The final fixture requires independently queried zero alpha on every transition sample, logs logical visibility separately, and still requires strict logical hiding after settlement. Exact restoration checks remain unchanged.
 
-Real final preset cycles observed brief native taskbar visibility followed by automatic re-hide in 62–406 ms. Continuous invisibility through every Shell transition is not certified. The separate recovery process must remain enabled.
+## Taskbar transitions
 
-Workspace integration is Windows-version dependent; the Windows 11 workspace backend is not certified/supported by this preview. Icon packs are curated subsets; import expects a flat local PNG manifest, not an arbitrary Linux SVG archive. No remote icon feed or update/uninstall interface is provided.
+The visibility-only approach still allowed sampled taskbar presentation during Windows restyling. Recovery journal version 5 also records original layered attributes before applying a zero-alpha guard. A combined startup/theme-switch probe recorded zero presented-taskbar samples across 71 transition sample cycles, followed by ten stable hidden samples and exact native restoration. Explorer still issued logical SHOW events in 27 samples: transparency prevents presentation during these events. Sampling does not certify every frame or every Windows version.
 
-## Run tests
+The helper restores original opacity with visibility and work areas. The production five-second UI lease, parent liveness, explicit Stop and emergency restore retain priority during bounded theme settlement. Explorer remains running; no system files are modified.
+
+## Run checks
 
 ```powershell
-# No synthetic pointer or keyboard input; some tests still open owned UI windows.
-ctest --test-dir build-v03 -C Release --output-on-failure -E "^(WindowsDockHover|WindowsKeyHook|WindowsOverview|WindowsPersonalization)$"
-
-# Full interactive suite: use an unlocked, input-idle Windows session.
+cmake -S . -B build-v03 -A x64
+cmake --build build-v03 --config Release --parallel
 ctest --test-dir build-v03 -C Release --output-on-failure
 ```
 
-Native recovery scenarios are deliberately opt-in, outside the normal CTest run. On a disposable Windows test session, close Aether and launch `AetherTaskbarRecoveryTests.exe` with one of `--native-acceptance`, `--app-startup-acceptance`, `--appbar-only-acceptance`, or `--app-effects-acceptance`. These fixtures capture their own native state and use an independent sentinel; they can temporarily hide taskbars and terminate only their owned test processes. Do not substitute another machine's captured state. Machine-specific development baselines, profiles, raw logs and recovery snapshots are intentionally omitted from the public repository.
+Use an unlocked input-idle session for the complete native UI suite. Repeat with Debug. Hosted Windows CI builds all targets but runs only headless-safe core/configuration/performance-math checks. Ubuntu CI runs portable core checks. Neither certifies interactive Windows recovery.
 
-## Resource observations
+For failure scenarios, close Aether and run AetherTaskbarRecoveryTests.exe with --native-acceptance, --app-startup-acceptance, --appbar-only-acceptance or --app-effects-acceptance in a disposable Windows session. These fixtures temporarily hide taskbars and terminate only owned processes. Never substitute another machine's captured native state.
 
-Short saved-profile Release observations measured approximately 0.4101% machine CPU / 166.45 MiB private with Studio open, and 0.0466% / 168.58 MiB private after closing Studio, over about 20 seconds each. Input was not controlled. Scope was the root plus directly named Aether helpers; DWM/GPU/frame pacing and missed between-sample processes were excluded. These are not idle benchmarks, leak certification or causal comparisons to an older build.
+## Remaining limits
 
-## Hosted CI
+- Complex graphemes, double-width terminal text, IME, mouse reporting, full xterm compatibility and complete terminal screen-reader support.
+- File mutation and network browsing in Aether Files.
+- Broader Windows-version/workspace compatibility, mixed-DPI, GPU/frame-pacing and long-duration resource validation.
+- Failure injection for every preset rollback write.
+- Icon packs are curated subsets; import accepts flat local PNG manifests, not arbitrary Linux SVG archives. Remote icon feeds and update/uninstall interfaces remain unfinished.
+- Windows accent cache regeneration prevents claiming byte-for-byte absence of every Windows-generated cache value.
 
-Windows CI compiles all targets and runs core/configuration/performance-math checks. Ubuntu CI runs the portable core tests. Interactive GUI, real-pointer, taskbar and crash/hang acceptance require a real Windows desktop and are not represented by a green hosted build.
+Short resource observations exclude DWM/GPU and do not certify leaks or long-duration behavior. Stock terminal backgrounds are static, local and demand-painted; they add no continuous animation timer. See [design research and controls](TERMINAL_DESIGNS.md).

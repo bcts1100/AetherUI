@@ -49,7 +49,7 @@ int main(){
  auto check=[&](bool ok,const char* detail){++checks;if(!ok){++failures;std::cerr<<detail<<"\n";}};
  auto paint=[&]{editor.update();UpdateWindow(editor.hwnd());};
  editor.open(displays.front());UpdateWindow(editor.hwnd());
- for(int i=0;i<8;++i)SendMessageW(editor.hwnd(),WM_KEYDOWN,VK_TAB,0);
+ for(int i=0;i<13;++i)SendMessageW(editor.hwnd(),WM_KEYDOWN,VK_TAB,0);
  SendMessageW(editor.hwnd(),WM_KEYDOWN,VK_SPACE,0);
  check(app.config().theme==preset(1),"Keyboard cannot select the Midnight theme.");
  bool first=false;auto saved=win::loadConfig(first);
@@ -67,17 +67,17 @@ int main(){
   click(x,y);KillTimer(nullptr,presetDialogTimer);presetDialogTimer=0;
  };
  resize(620,700);
- click(80,175);click(632,370);
+ click(80,164);click(632,370);
  check(app.config().defaults.edge==Edge::Right,"Compact Desktop Studio cannot reach the right-edge setting.");
  editor.open(displays.front());resize(730,460);
  click(80,125);
- for(int i=0;i<7;++i)SendMessageW(editor.hwnd(),WM_KEYDOWN,VK_TAB,0);
+ for(int i=0;i<12;++i)SendMessageW(editor.hwnd(),WM_KEYDOWN,VK_TAB,0);
  for(int i=0;i<3;++i)SendMessageW(editor.hwnd(),WM_KEYDOWN,VK_NEXT,0);
  SendMessageW(editor.hwnd(),WM_KEYDOWN,VK_RETURN,0);
  check(app.config().theme==preset(1),"Enter applied a focused control hidden by scrolling.");
 
  // A control must change the selected profile and survive a real disk reload.
- resize(730,900);click(80,175);
+ resize(730,900);click(80,164);
  click(548,465);
  check(app.config().defaults.dockGap==12,"Dock gap control did not change the default profile.");
  saved=win::loadConfig(first);
@@ -86,7 +86,7 @@ int main(){
  check(app.config().defaults.dockGap==32,"Dock gap increase exceeded or missed the upper bound.");
  for(int i=0;i<20;++i)click(410,465);
  check(app.config().defaults.dockGap==0,"Dock gap decrease exceeded or missed the lower bound.");
- click(80,225);click(480,385);
+ click(80,203);click(480,385);
  check(!app.config().windowPreviews,"Window previews preference did not toggle off.");
  saved=win::loadConfig(first);
  check(!saved.windowPreviews&&!saved.hideTaskbar,"Preview preference was not persisted with taskbar hiding disabled.");
@@ -99,7 +99,7 @@ int main(){
  config.displays[source]=profile;
  DisplayOptions disconnected;disconnected.edge=Edge::Right;disconnected.dockGap=30;
  config.displays["disconnected-test-display"]=disconnected;app.apply(config);
- click(80,175);
+ click(80,164);
  Rect bounds=displays.front().bounds;
  for(const auto& display:displays){bounds.left=std::min(bounds.left,display.bounds.left);bounds.top=std::min(bounds.top,display.bounds.top);bounds.right=std::max(bounds.right,display.bounds.right);bounds.bottom=std::max(bounds.bottom,display.bounds.bottom);}
  float mapWidth=client.right/(dpi/96.f)/std::min(1.f,client.right/(dpi/96.f)/730.f)-278;
@@ -140,7 +140,7 @@ int main(){
  saved=win::loadConfig(first);check(saved.theme==custom,"Applying a saved palette was not persisted.");
  // Tab reaches the offscreen saved-palette rename action on a compact window.
  resize(730,460);click(80,125);
- for(int n=0;n<22;++n)SendMessageW(editor.hwnd(),WM_KEYDOWN,VK_TAB,0);
+ for(int n=0;n<27;++n)SendMessageW(editor.hwnd(),WM_KEYDOWN,VK_TAB,0);
  requestedPresetName=L"Renamed Desk";acceptPresetName=true;presetDialogTimer=SetTimer(nullptr,0,20,presetNameTimer);
  SendMessageW(editor.hwnd(),WM_KEYDOWN,VK_RETURN,0);KillTimer(nullptr,presetDialogTimer);presetDialogTimer=0;paint();
  namedThemes=win::savedThemePresets();
@@ -152,7 +152,7 @@ int main(){
  check(win::readText(library/L"ignored.cmd")=="Do not execute or load this file.","Saved palette actions touched an unrelated script file.");
 
  // Complete named layouts apply through the real editor while retaining unrelated state.
- click(80,175);
+ click(80,164);
  SendMessageW(editor.hwnd(),WM_MOUSEWHEEL,MAKEWPARAM(0,-720),0);paint();
  float layoutScroll=std::min(330.f,std::max(0.f,1560.f-(client.bottom/factor-151.f)));
  namedClick(L"Cancelled layout",false,315,961-layoutScroll);

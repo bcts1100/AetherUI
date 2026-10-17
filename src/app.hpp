@@ -12,6 +12,7 @@
 #include "platform/wallpaper.hpp"
 #include "platform/windows_key.hpp"
 #include "platform/workspaces.hpp"
+#include "platform/appearance.hpp"
 #include <memory>
 namespace aether {
 // Owned controller diagnostics; only startup/shutdown transitions publish values.
@@ -21,6 +22,7 @@ namespace ui {class Panel; class Activities; class Editor; class QuickSettings; 
 class App {
  ui::Graphics graphics_;
  Config config_;
+ std::unique_ptr<win::AppearanceBridge> appearance_;
  std::optional<Theme> automaticTheme_;std::string automaticKey_;std::wstring automaticPath_;std::uint64_t automaticRequest_=0,automaticRevision_=0;bool automaticWaiting_=false;
  void updateAutomaticColors();void automaticColorsCompletion(const win::WallpaperCompletion&);void acceptAutomaticColors(const std::vector<Theme>&);
  HWND controller_{};
@@ -37,6 +39,7 @@ class App {
  std::map<std::uint64_t,PendingPin> pendingPins_;std::uint64_t pinRevision_=0;
  std::wstring tilingShortcutNotice_;
  std::shared_ptr<const std::vector<win::Application>> catalogSnapshot_;
+ bool appearanceReady_=false;ULONGLONG appearanceSettleUntil_=0;bool appearanceRebuild_=false;
  std::uint64_t layoutPasses_=0,unchangedSnapshots_=0,statusPolls_=0;bool quitRequested_=false;int quitExitCode_=0;
  std::vector<win::Monitor> displays_;
  std::vector<win::Window> windows_;
@@ -107,6 +110,7 @@ public:
  bool dockPreviewContainsPointer() const;
  void openActivities(const std::wstring& display=L"");
  void openEditor();
+ win::AppearanceBridge& appearanceBridge(){return *appearance_;}
  void openLooks();void openMarketplace();
  std::wstring liveWallpaperNotice()const;
  void openBackgrounds();void openExtensions();

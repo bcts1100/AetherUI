@@ -64,6 +64,41 @@ class NativeRecoveryBackend final:public RecoveryBackend,public RecoveryHideBack
  struct HideTrace {ULONGLONG tick=0;std::uint64_t hwnd=0;DWORD targetThread=0,pid=0;LONG_PTR beforeStyle=0,afterStyle=0;BOOL beforeVisible=FALSE,afterVisible=FALSE,previousVisibleReturn=FALSE;bool attempted=false;};
  HideTrace hideTrace_[320]{};unsigned hideTraceCount_=0;
  bool initialCapture_=false;std::uint32_t newIdentities_=0;NativeRecoveryContext context_=NativeRecoveryContext::ControllerFallback;
+ RecoverySnapshot* visualSnapshot_=nullptr;
+ RecoveryVisual* visual(const RecoveryEntry& entry) noexcept {
+  if(!visualSnapshot_)return nullptr;
+  for(LONG n=0;n<load(&visualSnapshot_->count);++n)if(visualSnapshot_->entries[n].hwnd==entry.hwnd&&visualSnapshot_->entries[n].pid==entry.pid&&visualSnapshot_->entries[n].processBirth==entry.processBirth){auto& v=visualSnapshot_->visuals[n];return v.captured&&v.hwnd==entry.hwnd?&v:nullptr;}
+  return nullptr;
+ }
+ bool maskVisual(const RecoveryEntry& entry) noexcept {
+  auto* v=visual(entry);if(!v)return false;
+  const auto h=reinterpret_cast<HWND>(static_cast<std::uintptr_t>(entry.hwnd));
+  // Intent is durable in shared recovery memory before the first style write.
+  // Both helper-death fallback and restore-only successor consume this journal.
+  v->owned=true;MemoryBarrier();
+  auto style=GetWindowLongPtrW(h,GWL_EXSTYLE);
+  if(!(style&WS_EX_LAYERED)){SetLastError(0);if(!SetWindowLongPtrW(h,GWL_EXSTYLE,style|WS_EX_LAYERED)&&GetLastError())return false;}
+  COLORREF key=0;BYTE alpha=255;DWORD flags=0;
+  if(GetLayeredWindowAttributes(h,&key,&alpha,&flags)&&(flags&LWA_ALPHA)&&alpha==0)return true;
+  return SetLayeredWindowAttributes(h,0,0,LWA_ALPHA)!=FALSE;
+ }
+ bool visualRestored(const RecoveryEntry& entry) noexcept {
+  auto* v=visual(entry);if(!v||!v->owned)return true;
+  auto h=reinterpret_cast<HWND>(static_cast<std::uintptr_t>(entry.hwnd));auto style=GetWindowLongPtrW(h,GWL_EXSTYLE);
+  if((style&WS_EX_LAYERED)!=(v->exStyle&WS_EX_LAYERED))return false;
+  if(!(v->exStyle&WS_EX_LAYERED))return true;
+  COLORREF key=0;BYTE alpha=0;DWORD flags=0;
+  return GetLayeredWindowAttributes(h,&key,&alpha,&flags)&&flags==v->flags&&(!(flags&LWA_ALPHA)||alpha==v->alpha)&&(!(flags&LWA_COLORKEY)||key==v->colorKey);
+ }
+ bool restoreVisual(const RecoveryEntry& entry) noexcept {
+  auto* v=visual(entry);if(!v||!v->owned)return true;
+  auto h=reinterpret_cast<HWND>(static_cast<std::uintptr_t>(entry.hwnd));auto style=GetWindowLongPtrW(h,GWL_EXSTYLE);
+  if(v->exStyle&WS_EX_LAYERED){
+   if(!(style&WS_EX_LAYERED)){SetLastError(0);if(!SetWindowLongPtrW(h,GWL_EXSTYLE,style|WS_EX_LAYERED)&&GetLastError())return false;}
+   if(!SetLayeredWindowAttributes(h,v->colorKey,v->alpha,v->flags))return false;
+  }else if(style&WS_EX_LAYERED){SetLastError(0);if(!SetWindowLongPtrW(h,GWL_EXSTYLE,style&~static_cast<LONG_PTR>(WS_EX_LAYERED))&&GetLastError())return false;}
+  return visualRestored(entry);
+ }
  HANDLE confirmationParent_=nullptr,confirmationStop_=nullptr;bool confirmationInterrupted_=false;RecoverySnapshot* confirmationSnapshot_=nullptr;
  void flushHideTrace() noexcept {
   try {std::ostringstream out;out<<"Taskbar hide request DIAG process="<<GetCurrentProcessId()<<" helperThread="<<GetCurrentThreadId()<<" requestsObserved="<<hideTraceCount_
@@ -73,13 +108,23 @@ class NativeRecoveryBackend final:public RecoveryBackend,public RecoveryHideBack
   }catch(...){}
  }
 public:
- explicit NativeRecoveryBackend(NativeRecoveryContext context=NativeRecoveryContext::ControllerFallback,HANDLE parent=nullptr,HANDLE stop=nullptr):context_(context),confirmationParent_(parent),confirmationStop_(stop){}
+ explicit NativeRecoveryBackend(NativeRecoveryContext context=NativeRecoveryContext::ControllerFallback,HANDLE parent=nullptr,HANDLE stop=nullptr,RecoverySnapshot* snapshot=nullptr):context_(context),visualSnapshot_(snapshot),confirmationParent_(parent),confirmationStop_(stop){}
+ bool maintainVisibility(RecoverySnapshot& s) noexcept {
+  if(load(&s.armed)==0||load(&s.revoked)||load(&s.restoring)||load(&s.phase)!=static_cast<LONG>(RecoveryPhase::Armed))return false;
+  confirmationSnapshot_=&s;
+  struct Reset {RecoverySnapshot*& value;~Reset(){value=nullptr;}} reset{confirmationSnapshot_};
+  if(!hideAllowed(s)){InterlockedExchange(&s.revoked,1);return false;}
+  if(!confirmationEntriesValid(s))return true; // normal refresh handles new identities
+  for(LONG i=0;i<load(&s.count);++i)if(!hideAllowed(s)||!requestHidden(s.entries[i])){InterlockedExchange(&s.revoked,1);return false;}
+  if(!hideAllowed(s)){InterlockedExchange(&s.revoked,1);return false;}
+  return true;
+ }
  bool validEntry(const RecoveryEntry& entry) noexcept override {
   auto window=reinterpret_cast<HWND>(static_cast<std::uintptr_t>(entry.hwnd));
   return entry.processBirth&&windowAlive(window,entry.pid)&&processBirth(entry.pid)==entry.processBirth&&nativeTaskbarWindow(window);
  }
  void requestVisibility(const RecoveryEntry& entry) noexcept override {
-  if(!validEntry(entry))return;
+  if(!validEntry(entry)||!restoreVisual(entry))return;
   const auto window=reinterpret_cast<HWND>(static_cast<std::uintptr_t>(entry.hwnd));const int target=entry.visible?SW_SHOWNA:SW_HIDE;
   // Synchronous restoration is confined to the independent writer. Its BOOL
   // is prior visibility, not success; state/visibility/workspace still confirm.
@@ -92,7 +137,7 @@ public:
    <<" returned="<<result<<" returnMeaning="<<(helperContext?"previousVisibility":"operationStarted");log(out.str());}catch(...){}
  }
  bool visibilityRestored(const RecoveryEntry& entry) noexcept override {
-  return !validEntry(entry)||(IsWindowVisible(reinterpret_cast<HWND>(static_cast<std::uintptr_t>(entry.hwnd)))!=FALSE)==(entry.visible!=0);
+  return !validEntry(entry)||(visualRestored(entry)&&(IsWindowVisible(reinterpret_cast<HWND>(static_cast<std::uintptr_t>(entry.hwnd)))!=FALSE)==(entry.visible!=0));
  }
  void requestState(DWORD state) noexcept override {
   const DWORD setterState=nativeTaskbarSetterMask(state);
@@ -130,6 +175,9 @@ public:
     LONG count=load(&snapshot.count);bool known=false;LONG slot=-1;
     for(LONG i=0;i<count;++i){const auto& entry=snapshot.entries[i];if(entry.hwnd==reinterpret_cast<std::uintptr_t>(h)&&entry.pid==pid&&entry.processBirth==birth){known=true;break;}if(slot<0&&!validEntry(entry))slot=i;}
     if(known)continue;if(slot<0){if(count>=32){recoveryDiagnostic(snapshot,"capture-capacity");return false;}slot=count;}
+    RecoveryVisual original{};original.hwnd=reinterpret_cast<std::uintptr_t>(h);original.exStyle=static_cast<DWORD>(GetWindowLongPtrW(h,GWL_EXSTYLE));
+    if((original.exStyle&WS_EX_LAYERED)&&!GetLayeredWindowAttributes(h,&original.colorKey,&original.alpha,&original.flags))return false;
+    original.captured=true;snapshot.visuals[slot]=original;
     snapshot.entries[slot]={reinterpret_cast<std::uintptr_t>(h),pid,IsWindowVisible(h)?1L:0L,birth};
     newIdentities_|=std::uint32_t{1}<<static_cast<unsigned>(slot);
     // Publish before any visibility/appbar mutation. Fallback may consume
@@ -166,6 +214,7 @@ public:
    InterlockedExchange(&confirmationSnapshot_->revoked,1);return false;
   }
   if(!validEntry(entry))return true;
+  if(!maskVisual(entry))return false;
   auto h=reinterpret_cast<HWND>(static_cast<std::uintptr_t>(entry.hwnd));HideTrace t{};t.tick=GetTickCount64();t.hwnd=entry.hwnd;
   t.targetThread=GetWindowThreadProcessId(h,&t.pid);t.beforeVisible=IsWindowVisible(h);t.beforeStyle=GetWindowLongPtrW(h,GWL_STYLE);
   t.attempted=t.beforeVisible!=FALSE;
@@ -243,7 +292,12 @@ public:
   flushHideTrace();recoveryDiagnostic(snapshot,"boundary-hidden-confirmation-failed",0,true);return false;
  }
  bool hideCaptured(RecoverySnapshot& snapshot) noexcept override {
-  confirmationSnapshot_=&snapshot;hideTraceCount_=0;const auto result=hideRecovery(&snapshot,*this);confirmationSnapshot_=nullptr;
+  confirmationSnapshot_=&snapshot;hideTraceCount_=0;
+  // Windows can repeatedly show the same genuine taskbar while changing its
+  // theme. A live refresh gets a bounded settlement budget; initial Arm keeps
+  // its shorter admission budget. Every attempt still checks Stop, parent,
+  // identity, revocation and the unchanged controller lease.
+  const auto result=hideRecovery(&snapshot,*this,initialCapture_?10u:40u,initialCapture_?50u:100u);confirmationSnapshot_=nullptr;
   if(result==RecoveryHideResult::Complete)return true;
   const DWORD error=result==RecoveryHideResult::VisibilityRequestFailed?GetLastError():0;flushHideTrace();
   const char* reason=result==RecoveryHideResult::Revoked?"hide-revoked":result==RecoveryHideResult::StateUnavailable?"hide-no-primary":result==RecoveryHideResult::ObservationUnavailable?"hide-observation-unavailable":result==RecoveryHideResult::VisibilityRequestFailed?"hide-visibility-request-failed":result==RecoveryHideResult::Deadline?"hide-confirmation-deadline":"hide-unarmed-or-invalid";
@@ -254,12 +308,16 @@ public:
 bool nativeTaskbarWindow(HWND window) noexcept {
  if(!window||!taskbarClass(window))return false;DWORD pid=0;GetWindowThreadProcessId(window,&pid);return pid&&explorerOwner(pid);
 }
+bool maintainRecoveryVisibility(RecoverySnapshot* s,HANDLE parent,HANDLE stop) noexcept {
+ if(!recoverySnapshotValid(s)||s->nativeAllowed!=1)return false;
+ NativeRecoveryBackend backend(NativeRecoveryContext::ActiveHelper,parent,stop,s);return backend.maintainVisibility(*s);
+}
 void restoreSnapshot(RecoverySnapshot* snapshot,NativeRecoveryContext context) noexcept {
- if(!recoverySnapshotValid(snapshot))return;NativeRecoveryBackend backend(context);restoreRecovery(snapshot,backend);
+ if(!recoverySnapshotValid(snapshot))return;NativeRecoveryBackend backend(context,nullptr,nullptr,snapshot);restoreRecovery(snapshot,backend);
 }
 bool runNativeRecoveryCommand(RecoverySnapshot* snapshot,RecoveryCommand command,ULONGLONG now,HANDLE parent,HANDLE stop) noexcept {
  if(!snapshot||snapshot->nativeAllowed!=1)return false;
- NativeRecoveryBackend backend(NativeRecoveryContext::ActiveHelper,parent,stop);
+ NativeRecoveryBackend backend(NativeRecoveryContext::ActiveHelper,parent,stop,snapshot);
  // Optional success I/O must not delay the critical acknowledgment publication.
  // The watchdog records command/result diagnostics only after publishing ACK.
  return executeRecoveryCommand(snapshot,backend,command,now);
@@ -468,6 +526,12 @@ bool TaskbarGuard::refreshAndConfirm() noexcept {
   failClosed(true);
  }
  return confirmed;
+}
+bool TaskbarGuard::settleAppearance() noexcept {
+ if(!enabled())return !recoveryOwnerAlive();
+ if(!healthy())return false;
+ InterlockedExchange64(&snapshot_->heartbeat,static_cast<LONG64>(GetTickCount64()));
+ return request(RecoveryCommand::AppearanceSettle,true,1000);
 }
 void TaskbarGuard::heartbeat(bool asynchronousFailure) noexcept {
  if(!snapshot_||revoked_)return;if(!healthy()){recoveryDiagnostic(*snapshot_,"guard-heartbeat-owner-unhealthy",0,false);failClosed(asynchronousFailure);return;}

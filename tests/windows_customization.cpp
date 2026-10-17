@@ -41,10 +41,10 @@ int main(){try{
  App app;ui::Graphics graphics;ui::Editor editor(graphics,app);auto displays=win::monitors();check(!displays.empty(),"No native test display");editor.open(displays.front());UpdateWindow(editor.hwnd());
  invoke(editor,L"Frosted glass");check(app.config().theme.name=="Frosted","Frosted control did not apply native theme");
  invoke(editor,L"Minimal");check(app.config().theme.name=="Minimal","Minimal control did not apply native theme");
- invoke(editor,L"Increase text scale");check(serializeSettings(app.config()).find("fontScale=105\n")!=std::string::npos,"Native text scale control did not change persisted setting");
- invoke(editor,L"Reduce motion");check(serializeSettings(app.config()).find("reduceMotion=1\n")!=std::string::npos,"Reduce-motion control did not persist");
+ invoke(editor,L"Fonts");invoke(editor,L"Larger general text");check(serializeSettings(app.config()).find("fontScale=105\n")!=std::string::npos,"Native text scale control did not change persisted setting");
+ invoke(editor,L"Behavior & recovery");invoke(editor,L"Reduce motion");check(serializeSettings(app.config()).find("reduceMotion=1\n")!=std::string::npos,"Reduce-motion control did not persist");
  bool first=false;auto loaded=win::loadConfig(first);check(serializeSettings(loaded).find("fontScale=105\n")!=std::string::npos&&!loaded.hideTaskbar,"Customization disk reload changed setting or taskbar gate");
- invoke(editor,L"Layout & displays");
+ invoke(editor,L"Displays & layout");
  auto visibility=[&](const char* control){auto profile=app.config().forDisplay(win::utf8(displays.front().name));std::cout<<"VISIBILITY "<<control<<" defaults="<<app.config().defaults.clock<<","<<app.config().defaults.focusedTitle<<","<<app.config().defaults.status<<" selected="<<profile.clock<<","<<profile.focusedTitle<<","<<profile.status<<" overrides="<<app.config().displays.size()<<'\n';};
  visibility("before");invoke(editor,L"Show clock");visibility("clock");invoke(editor,L"Show focused title");visibility("title");invoke(editor,L"Show status");visibility("status");
  check(!app.config().defaults.clock&&!app.config().defaults.focusedTitle&&!app.config().defaults.status,"Native display controls did not change top-bar visibility");

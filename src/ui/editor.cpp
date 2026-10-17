@@ -146,7 +146,7 @@ float Editor::layoutScale() const{
  RECT r{};GetClientRect(hwnd_,&r);return std::clamp(r.right/scale()/730.f,.1f,1.f);
 }
 float Editor::contentHeight() const{
- return page_==5?1100.f+static_cast<float>(iconPacks_.size())*136:page_==4?2400.f:page_==1?1870.f+static_cast<float>(savedLayouts_.size()+app_.config().snapLayouts.size())*62:page_==3?144.f+static_cast<float>(app_.config().pins.size())*108:page_==0?1340.f+static_cast<float>(savedThemes_.size())*62:605.f;
+ return page_==6?1020.f+static_cast<float>(app_.appearanceBridge().options().rules.size())*48:page_==5?1100.f+static_cast<float>(iconPacks_.size())*136:page_==4?660.f:page_==7?960.f:page_==8?1100.f:page_==9?1390.f:page_==10?470.f:page_==1?1870.f+static_cast<float>(savedLayouts_.size()+app_.config().snapLayouts.size())*62:page_==3?144.f+static_cast<float>(app_.config().pins.size())*108:page_==0?850.f+static_cast<float>(savedThemes_.size())*62:740.f;
 }
 void Editor::focusAction(int direction){
  UpdateWindow(hwnd_);if(actions_.empty())return;SetFocus(hwnd_);
@@ -168,15 +168,17 @@ void Editor::paint(Canvas& c){
  c.grid(box(22,20,34,34),theme_.accent);
  c.text(L"AETHER",box(68,20,100,34),theme_.foreground,18,true);
  c.text(L"DESKTOP STUDIO",box(24,59,150,24),theme_.muted,10,true);
- const wchar_t* labels[]={L"Appearance",L"Layout & displays",L"Behavior & safety",L"Pinned apps",L"Personalize",L"Icons & presets"};
- for(int i=0;i<6;++i)button(c,box(12,108+i*49.f,170,39),labels[i],[this,i]{page_=i;scroll_=0;focusedAction_=-1;if(i==5)iconPacks_=win::iconPacks();invalidate();},page_==i,labels[i],ROLE_SYSTEM_PAGETAB);
- c.text(L"Native desktop alpha",box(24,height-70,160,24),theme_.muted,11);
- c.text(L"v0.9.0  |  C++ desktop",box(24,height-46,160,22),theme_.muted,10);
+ const wchar_t* labels[]={L"Colors & themes",L"Displays & layout",L"Behavior & recovery",L"Pinned apps",L"Wallpaper",L"Icons & presets",L"Windows integration",L"Fonts",L"Bars & dock",L"Terminal",L"Widgets & plugins"};
+ const float navPitch=std::clamp((height-122)/11,24.f,39.f);
+ for(int i=0;i<11;++i)button(c,box(12,108+i*navPitch,170,navPitch-4),labels[i],[this,i]{page_=i;scroll_=0;focusedAction_=-1;if(i==5)iconPacks_=win::iconPacks();invalidate();},page_==i,labels[i],ROLE_SYSTEM_PAGETAB);
+ if(height>540)c.text(L"Native desktop alpha",box(24,height-70,160,24),theme_.muted,11);
+ if(height>540)c.text(L"v0.9.0  |  C++ desktop",box(24,height-46,160,22),theme_.muted,10);
  c.text(labels[page_],box(220,22,width-248,39),theme_.foreground,26,true);
- c.text(page_==0?L"A coherent palette. A desktop that feels like yours.":page_==1?L"Independent settings for each display.":page_==2?L"Control integration without changing Windows system files.":page_==4?L"Wallpaper colors, installed fonts, and independently styled bars.":page_==5?L"Preview a coordinated desktop or choose an offline icon pack.":L"Choose the apps that stay with you.",box(221,68,width-248,27),theme_.muted,12);
+ const wchar_t* descriptions[]={L"Desktop colors, theme files and saved palettes.",L"Monitor profiles, panel placement and window tiling.",L"Startup behavior, keyboard shortcuts and native recovery.",L"Manage the applications in your dock.",L"Backgrounds and automatic workspace colors.",L"Offline icon packs and coordinated desktop presets.",L"Optional Windows appearance and per-app frame rules.",L"Installed typography and fonts for individual UI components.",L"Top-bar and dock materials, dimensions and module placement.",L"Real shells, ten stock designs and your own background images.",L"Widgets, layout editing and bundled plugins."};
+ c.text(descriptions[page_],box(221,68,width-248,27),theme_.muted,12);
  c.pushClip(box(201,108,width-201,std::max(1.f,height-151)));
  float top=114-scroll_;
- if(page_==0)appearance(c,top);else if(page_==1)layouts(c,top);else if(page_==2)behavior(c,top);else if(page_==4)personalize(c,top);else if(page_==5)packs(c,top);else pins(c,top);
+ if(page_==0)appearance(c,top);else if(page_==1)layouts(c,top);else if(page_==2)behavior(c,top);else if(page_==4||page_==7||page_==8||page_==10)personalize(c,top);else if(page_==9)terminalSettings(c,top);else if(page_==5)packs(c,top);else if(page_==6)integration(c,top);else pins(c,top);
  c.popClip();
  c.fill(box(201,height-40,width-201,40),theme_.background);
  c.line(219,height-40,width-24,height-40,theme_.raised);
@@ -243,25 +245,8 @@ void Editor::appearanceDetails(Canvas& c,float y){
  button(c,box(220,y+34,half,37),L"Frosted glass",[this]{auto config=app_.config();config.theme=preset(3);app_.apply(config);},app_.config().theme==preset(3));
  button(c,box(232+half,y+34,half,37),L"Minimal",[this]{auto config=app_.config();config.theme=preset(4);app_.apply(config);},app_.config().theme==preset(4));
  c.text(L"Frosted uses desktop blur where available, with an opaque fallback.",box(221,y+80,width,30),theme_.muted,10);
- c.text(L"Typography",box(224,y+123,145,34),theme_.foreground,14,true);
- button(c,box(390,y+123,std::max(80.f,width-170.f),34),win::wide(theme_.fontFamily),[this]{chooseInstalledFont();},false,L"Change font family");
- auto number=[&](float row,const wchar_t* label,int Theme::*member,int minimum,int maximum,int step,const wchar_t* unit,const wchar_t* accessible){
-  c.text(label,box(224,row,205,34),theme_.foreground,13,true);
-  button(c,box(440,row,42,34),L"-",[this,member,minimum,step]{auto config=app_.config();config.theme.*member=std::max(minimum,config.theme.*member-step);app_.apply(config);},false,std::wstring(L"Decrease ")+accessible);
-  c.text(std::to_wstring(theme_.*member)+unit,box(486,row,70,34),theme_.foreground,12,false,1);
-  button(c,box(562,row,42,34),L"+",[this,member,maximum,step]{auto config=app_.config();config.theme.*member=std::min(maximum,config.theme.*member+step);app_.apply(config);},false,std::wstring(L"Increase ")+accessible);
- };
- number(y+170,L"Text scale",&Theme::fontScale,85,125,5,L"%",L"text scale");
- number(y+217,L"Surface border",&Theme::borderWidth,0,3,1,L" px",L"surface border");
- number(y+264,L"Gradient strength",&Theme::gradientStrength,0,100,10,L"%",L"gradient strength");
- number(y+311,L"Dock highlight",&Theme::dockHighlight,0,100,10,L"%",L"dock highlight");
- c.text(L"Running indicator",box(224,y+358,170,34),theme_.foreground,13,true);
- const IndicatorStyle indicators[]={IndicatorStyle::Dots,IndicatorStyle::Line,IndicatorStyle::Square};const wchar_t* indicatorLabels[]={L"Dots",L"Line",L"Square"};
- for(int i=0;i<3;++i)button(c,box(390+i*95.f,y+358,84,34),indicatorLabels[i],[this,value=indicators[i]]{auto config=app_.config();config.theme.indicator=value;app_.apply(config);},theme_.indicator==indicators[i],std::wstring(L"Running indicator: ")+indicatorLabels[i]);
- toggle(c,y+409,L"Reduce motion",L"Pause animated wallpaper and disable dock easing. Windows animation preference is also respected.",app_.config().reduceMotion,[this]{auto config=app_.config();config.reduceMotion=!config.reduceMotion;app_.apply(config);});
- button(c,box(220,y+504,half,37),L"Backgrounds",[this]{app_.openBackgrounds();});
- button(c,box(232+half,y+504,half,37),L"Extensions",[this]{app_.openExtensions();});
- button(c,box(220,y+553,width,37),L"Looks gallery and matching widgets",[this]{app_.openLooks();});
+ c.text(L"Fonts, wallpaper and bar designs each have their own section in the sidebar.",box(222,y+125,width,48),theme_.muted,12);
+
 }
 void Editor::layoutChange(const std::function<void(DisplayOptions&)>& change){
  auto config=app_.config();
@@ -372,7 +357,8 @@ void Editor::behavior(Canvas& c,float y){
  c.text(L"Ctrl+Alt+Space  Activities     Ctrl+Alt+E  Desktop Studio",box(222,y+454,c.size().width-248,27),theme_.muted,12);
  c.text(L"Ctrl+Alt+1 / 2  Snap left/right     Ctrl+Alt+3..6  Snap corners",box(222,y+487,c.size().width-248,27),theme_.muted,12);
  c.text(L"Ctrl+Alt+F12 restores the taskbar. Explorer stays running.",box(222,y+528,c.size().width-248,27),theme_.foreground,12,true);
- c.text(L"No startup entry is created. No telemetry, online service, or browser engine.",box(222,y+562,c.size().width-248,27),theme_.muted,11);
+ c.text(L"No startup entry is created. No browser engine is embedded.",box(222,y+562,c.size().width-248,27),theme_.muted,11);
+ toggle(c,y+620,L"Reduce motion",L"Pause animated wallpaper and dock easing. Windows animation preferences are also respected.",config.reduceMotion,[this]{auto next=app_.config();next.reduceMotion=!next.reduceMotion;app_.apply(std::move(next));});
 }
 void Editor::pins(Canvas& c,float y){
  button(c,box(220,y,170,36),L"Add application",[this]{app_.choosePin(hwnd_);});

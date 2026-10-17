@@ -22,6 +22,7 @@ class Editor final:public Surface {
  std::vector<win::IconPack> iconPacks_;std::string packFilter_;std::wstring packNotice_;
  int desktopChoice_=0,desktopAppliedBackground_=0;bool arrangePresetWidgets_=false;std::optional<Config> desktopUndo_,desktopApplied_;GUID desktopWorkspace_{};std::optional<win::WorkspaceAppearance> desktopWallpaperUndo_;
  struct WidgetUndo {std::string package,id;WidgetPlacement before,after;};std::vector<WidgetUndo> desktopWidgetUndo_;
+ void integration(Canvas&,float);void terminalSettings(Canvas&,float);
  void packs(Canvas&,float);void importPack();void applyDesktopPreset();void undoDesktopPreset();
  void personalize(Canvas&,float);void chooseInstalledFont(FontPart part=FontPart::General);void buildPalette(bool chooseImage=false);void updatePaletteImage();void applyPalette();
  std::string themeLibraryNotice_,layoutLibraryNotice_;
@@ -47,6 +48,8 @@ class Editor final:public Surface {
 public:
  Editor(Graphics&,App&);~Editor() override{if(accessibility_)accessibility_->detach();destroy();}
  void open(const win::Monitor&);void update();
+ void openTerminal(){page_=9;scroll_=0;focusedAction_=-1;invalidate();}
+ void openIntegration(){page_=6;scroll_=0;focusedAction_=-1;invalidate();}
  void paletteCompletion(const win::WallpaperCompletion&);
 };
 }
