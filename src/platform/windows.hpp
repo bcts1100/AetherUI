@@ -27,7 +27,7 @@ namespace aether::win {
 using Microsoft::WRL::ComPtr;
 constexpr UINT RefreshMessage=WM_APP+11, CatalogMessage=WM_APP+12,
  IconsMessage=WM_APP+13, ApplyMessage=WM_APP+14, AppbarMessage=WM_APP+15,
- TrayMessage=WM_APP+16, RelayoutMessage=WM_APP+17, OpenEditorMessage=WM_APP+18, ShellMessage=WM_APP+19,PluginDataMessage=WM_APP+20;
+ TrayMessage=WM_APP+16, RelayoutMessage=WM_APP+17, OpenEditorMessage=WM_APP+18, ShellMessage=WM_APP+19,PluginDataMessage=WM_APP+20,StatusMessage=WM_APP+21;
 struct Handle {
  HANDLE value=nullptr;
  Handle()=default;explicit Handle(HANDLE v):value(v){}

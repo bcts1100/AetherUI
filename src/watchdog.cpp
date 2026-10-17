@@ -61,7 +61,19 @@ int WINAPI wWinMain(HINSTANCE,HINSTANCE,LPWSTR,int){
   if(lifetime==WAIT_OBJECT_0||lifetime==WAIT_OBJECT_0+1){result=lifetime;restore=true;break;}
   if(lifetime==WAIT_FAILED){result=WAIT_FAILED;restore=true;break;}
   if(load(&snapshot->revoked)){result=WAIT_OBJECT_0;restore=true;break;}
-  if(recoveryLeaseExpired(snapshot,GetTickCount64())){helperDiagnostic("controller-lease-expired");result=WAIT_OBJECT_0;restore=true;break;}
+  if(recoveryLeaseExpired(snapshot,GetTickCount64())){
+   // Read-only breadcrumbs identify the stalled UI work without renewing its
+   // lease or waiting for that UI thread to answer a message.
+   auto controller=FindWindowW(L"Aether.Controller.v3",L"Aether UI Controller");DWORD owner=0;GetWindowThreadProcessId(controller,&owner);
+   if(controller&&owner==GetProcessId(parent.value)){
+    std::ostringstream trace;trace<<"UI lease expiry DIAG parent="<<owner
+     <<" messagePlusOne="<<reinterpret_cast<ULONG_PTR>(GetPropW(controller,L"Aether.UI.Message"))
+     <<" wParam="<<reinterpret_cast<ULONG_PTR>(GetPropW(controller,L"Aether.UI.WParam"))
+     <<" dispatchStarted="<<reinterpret_cast<ULONG_PTR>(GetPropW(controller,L"Aether.UI.Started"));
+    aether::win::log(trace.str());
+   }
+   helperDiagnostic("controller-lease-expired");result=WAIT_OBJECT_0;restore=true;break;
+  }
   if(settleUntil&&!maintainRecoveryVisibility(snapshot,parent.value,stop.value)){restore=true;break;}
   if(settleUntil&&GetTickCount64()>=settleUntil){settleUntil=0;settleBegan=0;pendingRefresh=true;}
   if(pendingRefresh&&!settleUntil&&snapshot->nativeAllowed&&load(&snapshot->armed)){

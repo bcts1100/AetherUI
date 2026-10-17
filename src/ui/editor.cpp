@@ -346,11 +346,11 @@ void Editor::layouts(Canvas& c,float y){
 }
 void Editor::behavior(Canvas& c,float y){
  const auto& config=app_.config();
- toggle(c,y,L"Hide Windows taskbar on load",L"Recovery helper required. Ctrl+Alt+F12 restores the taskbar.",config.hideTaskbar,[this]{auto next=app_.config();next.hideTaskbar=!next.hideTaskbar;app_.apply(next);});
+ toggle(c,y,L"Hide Windows taskbar on load",L"Recovery helper required. Ctrl+Alt+F12 restores the taskbar.",app_.taskbarStartupRequested(),[this]{app_.setTaskbarHiding(!app_.taskbarStartupRequested());});
  toggle(c,y+79,L"Hide panels over fullscreen apps",L"Per-display detection. No game process injection or FPS claims.",config.hideFullscreen,[this]{auto next=app_.config();next.hideFullscreen=!next.hideFullscreen;app_.apply(next);});
  toggle(c,y+158,L"24-hour clock",L"Use a 24-hour clock in each top bar.",config.clock24,[this]{auto next=app_.config();next.clock24=!next.clock24;app_.apply(next);});
  toggle(c,y+237,L"Live window previews",L"Live previews in Activities and dock window lists.",config.windowPreviews,[this]{auto next=app_.config();next.windowPreviews=!next.windowPreviews;app_.apply(next);});
- button(c,box(220,y+332,208,39),L"Restore Windows taskbar",[this]{app_.restoreNative();},true);
+ button(c,box(220,y+332,208,39),app_.taskbarStartupRequested()&&!config.hideTaskbar?L"Resume taskbar hiding":L"Restore Windows taskbar",[this]{if(app_.taskbarStartupRequested()&&!app_.config().hideTaskbar)app_.setTaskbarHiding(true);else app_.restoreNative();},true);
  button(c,box(440,y+332,150,39),L"Rescan apps",[this]{app_.catalog().requestRescan();});
  button(c,box(220,y+387,208,39),L"Open settings folder",[this]{app_.launchTarget(hwnd_,win::configDirectory().wstring());});
  button(c,box(440,y+387,150,39),L"Quit Aether",[this]{app_.quit();});

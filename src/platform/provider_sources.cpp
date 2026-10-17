@@ -3,6 +3,7 @@
 #include "provider_codec.hpp"
 #include "identity.hpp"
 #include "plugin_provider.hpp"
+#include "status.hpp"
 #include <propkey.h>
 #include <set>
 #include <wincodec.h>
@@ -146,6 +147,13 @@ ProviderWireReply launchTarget(const ProviderBytes& payload){
  try{
   if(operation==ProviderOperation::MediaQuery||operation==ProviderOperation::MediaCommand||operation==ProviderOperation::SeattleForecast)return runPluginProviderOperation(operation,payload);
   ComApartment apartment;if(FAILED(apartment.result))return {1,{}};
+  if(operation==ProviderOperation::Status){
+   if(payload.size()!=2||payload[0]>2||(payload[0]==1?payload[1]>100:payload[1]!=0))return {1,{}};
+   if(payload[0]==1&&!setVolume(payload[1]/100.f))return {1,{}};
+   if(payload[0]==2&&!toggleMute())return {1,{}};
+   const auto status=readStatus(true,false);
+   return {0,{static_cast<std::uint8_t>(std::clamp(status.volume,-1,100)+1),static_cast<std::uint8_t>(status.muted?1:0),static_cast<std::uint8_t>(status.network==L"Online"?2:status.network==L"Offline"?1:0)}};
+  }
   if(operation==ProviderOperation::PinIdentity){auto target=decodeProviderTarget(payload);if(!target)return {1,{}};auto pin=pinFromPath(*target);if(!pin)return {1,{}};auto bytes=encodePin(*pin);return bytes.empty()?ProviderWireReply{1,{}}:ProviderWireReply{0,std::move(bytes)};}
   if(operation==ProviderOperation::WindowMetadata)return windowMetadata(payload);
   if(operation==ProviderOperation::Launch)return launchTarget(payload);

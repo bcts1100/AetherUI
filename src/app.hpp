@@ -53,7 +53,8 @@ class App {
  std::unique_ptr<ui::Backgrounds> backgrounds_;
  std::unique_ptr<ui::ExtensionRuntime> extensionRuntime_;
  std::unique_ptr<ui::Extensions> extensions_;
- win::Status status_;
+ win::Status status_;win::StatusService statusService_;
+ bool taskbarStartupPreference_=false;
  win::ProviderProcessOptions pluginProviders_;
  UINT taskbarCreated_{};
  bool running_=false, paused_=false, relayoutPending_=false, emergencyRegistered_=false;
@@ -70,6 +71,7 @@ class App {
  void queueShellMetadata();void shellCompletions();void refreshPinIdentities();
  bool tilingSuppressed() const;void updateTiling();
  void updateStatus();
+ void statusCompletion();
  void updateWorkspaceWallpaper();
  void updateTaskbarFailure(bool wait=false);
  void refreshTaskbar();
@@ -99,6 +101,10 @@ public:
  win::Monitor display(const std::wstring& name=L"") const;
  std::vector<DockGroup> dockGroups(const std::wstring& display) const;
  void apply(Config config);
+ bool taskbarStartupRequested()const{return taskbarStartupPreference_;}
+ void setTaskbarHiding(bool enabled){taskbarStartupPreference_=enabled;auto next=config_;next.hideTaskbar=enabled;apply(std::move(next));}
+ void requestVolume(int value){statusService_.volume(value);}
+ void requestMute(){statusService_.mute();}
  void scheduleLayout();
  void beginInteraction(){++interactionDepth_;}
  bool interactionActive()const{return interactionDepth_!=0;}

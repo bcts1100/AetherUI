@@ -11,8 +11,8 @@ jobs:
         run: cmake -S . -B build-v03 -G "Visual Studio 17 2022" -A x64 -DBUILD_TESTING=ON
       - name: Compile all native targets
         run: cmake --build build-v03 --config Release --parallel 4
-      - name: Core, configuration and measurement-math checks only
-        run: ctest --test-dir build-v03 -C Release --output-on-failure -R "^(Core.*|WindowsConfiguration|PerformanceScriptMath|GpuScriptMath|LongRunScriptMath)$"
+      - name: Core, configuration, async status and measurement checks
+        run: ctest --test-dir build-v03 -C Release --output-on-failure -R "^(Core.*|WindowsConfiguration|WindowsAsyncStatus|PerformanceScriptMath|GpuScriptMath|LongRunScriptMath)$"
       - name: Stage application
         run: cmake --install build-v03 --config Release --prefix package
       - uses: actions/upload-artifact@v4

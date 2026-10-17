@@ -35,7 +35,7 @@ int wmain(int argc,wchar_t** argv){
  using namespace aether;using namespace aether::win;
  if(argc>1&&std::wstring_view(argv[1])==L"--provider-channel"){
   return runProviderHost(argc,argv,[](ProviderOperation operation,const ProviderBytes&,std::wstring_view mode)->ProviderWireReply{
-   std::wstring name(mode);name+=operation==ProviderOperation::Catalog?L".catalog":operation==ProviderOperation::Icon?L".icon":L".other";
+   std::wstring name(mode);name+=operation==ProviderOperation::Catalog?L".catalog":operation==ProviderOperation::Icon?L".icon":operation==ProviderOperation::Status?L".status":L".other";
    Handle observed(OpenEventW(EVENT_MODIFY_STATE,FALSE,name.c_str()));if(observed)SetEvent(observed.value);
    Sleep(INFINITE);return {};
   });
@@ -53,6 +53,7 @@ int wmain(int argc,wchar_t** argv){
  const auto prefix=L"Local\\Aether.BlockedApp."+std::to_wstring(GetCurrentProcessId());
  Handle catalogEvent(CreateEventW(nullptr,TRUE,FALSE,(prefix+L".catalog").c_str()));
  Handle iconEvent(CreateEventW(nullptr,TRUE,FALSE,(prefix+L".icon").c_str()));
+ Handle statusEvent(CreateEventW(nullptr,TRUE,FALSE,(prefix+L".status").c_str()));
  const auto directory=executablePath().parent_path()/L"test-profiles"/(L"blocked-app-"+std::to_wstring(GetCurrentProcessId()));
  setConfigDirectory(directory);Config config;config.hideTaskbar=false;config.pins={{"Fixture",utf8(executablePath().native()),utf8(lower(executablePath().native()))}};saveConfig(config);
  const auto before=monitors();
@@ -63,10 +64,11 @@ int wmain(int argc,wchar_t** argv){
  int checks=0,failures=0;auto check=[&](bool ok,const char* text){++checks;std::cout<<(ok?"PASS ":"FAIL ")<<text<<'\n';if(!ok)++failures;};
  HWND window=nullptr;
  check(waitFor([&]{window=controller(created.dwProcessId);return window&&reinterpret_cast<ULONG_PTR>(GetPropW(window,AppLifecycleProperty))==static_cast<ULONG_PTR>(AppLifecyclePhase::Ready);},15000),"actual App completes initialization before the shutdown deadline starts");
- waitFor([&]{return WaitForSingleObject(catalogEvent.value,0)==WAIT_OBJECT_0&&WaitForSingleObject(iconEvent.value,0)==WAIT_OBJECT_0;},12000);
+ waitFor([&]{return WaitForSingleObject(catalogEvent.value,0)==WAIT_OBJECT_0&&WaitForSingleObject(iconEvent.value,0)==WAIT_OBJECT_0&&WaitForSingleObject(statusEvent.value,0)==WAIT_OBJECT_0;},12000);
  check(WaitForSingleObject(catalogEvent.value,0)==WAIT_OBJECT_0,"actual App catalog helper is blocked inside provider operation");
  check(WaitForSingleObject(iconEvent.value,0)==WAIT_OBJECT_0,"actual App icon helper is blocked inside provider operation");
- auto owned=children(created.dwProcessId);check(owned.size()>=2&&owned.size()<=3,"catalog/icon helpers and optional metadata helper are the only owned providers running");
+ check(WaitForSingleObject(statusEvent.value,0)==WAIT_OBJECT_0,"actual App stays responsive while its status helper is blocked inside provider operation");
+ auto owned=children(created.dwProcessId);check(owned.size()>=3&&owned.size()<=4,"catalog/icon/status helpers and optional metadata helper are the only owned providers running");
  const auto begin=GetTickCount64();if(window)PostMessageW(window,WM_CLOSE,0,0);
  DWORD wait=WAIT_TIMEOUT;ULONG_PTR previousPhase=0;
  while(GetTickCount64()-begin<3000){

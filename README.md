@@ -32,7 +32,7 @@ cmake --build build-v03 --config Release --parallel 4
 
 Close an existing Aether instance before building/running another copy. Run `Start.cmd` after building, or launch `build-v03/Release/AetherUI.exe`. A fresh local profile is created; personal development profiles are not distributed. No Windows login startup entry is installed.
 
-**Ctrl+Alt+E** opens Studio. Terminal customization and the dock-pin action live under **Terminal**. **Windows integration** holds optional OS appearance controls. **Ctrl+Alt+F12** restores the native desktop and disables hiding. Normal Quit restores Windows while retaining the preference for the next launch. Keep the recovery shortcut available before enabling taskbar hiding.
+**Ctrl+Alt+E** opens Studio. Terminal customization and the dock-pin action live under **Terminal**. **Windows integration** holds optional OS appearance controls. **Ctrl+Alt+F12** restores the native desktop and disables hiding. Normal Quit restores Windows while retaining the preference for the next launch. Automatic safety recovery also retains that startup choice; use **Behavior & recovery > Resume taskbar hiding** to start a fresh guard after recovery. Emergency restore explicitly disables the startup choice. Keep the recovery shortcut available before enabling taskbar hiding.
 
 For core-only Linux builds, use standard CMake configure/build/CTest commands. Linux builds the portable model/tests, not the Windows desktop UI.
 

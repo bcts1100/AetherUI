@@ -28,7 +28,7 @@ bool decimal(std::wstring_view value,std::uintptr_t& result){
   result=result*10+digit;}
  return result!=0;
 }
-bool operationValid(std::uint32_t value){return value>=1&&value<=14;}
+bool operationValid(std::uint32_t value){return value>=1&&value<=15;}
 struct Attributes {
  std::vector<std::uint8_t> bytes;LPPROC_THREAD_ATTRIBUTE_LIST list=nullptr;std::array<HANDLE,1> jobs{};
  ~Attributes(){if(list)DeleteProcThreadAttributeList(list);}

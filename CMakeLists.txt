@@ -59,7 +59,7 @@ if(WIN32)
   add_library(aether_platform
     src/platform/appearance.cpp src/platform/conpty.cpp src/platform/file_listing.cpp src/platform/icon_packs.cpp src/platform/marketplace.cpp src/platform/windows.cpp src/platform/windows_key.cpp src/platform/config.cpp src/platform/desktop.cpp src/platform/workspaces.cpp src/platform/backdrop.cpp
     src/platform/icons.cpp src/platform/catalog.cpp src/platform/safety.cpp src/platform/recovery_engine.cpp src/platform/work_area.cpp
-    src/platform/extensions.cpp src/platform/plugin_data.cpp src/platform/plugin_provider.cpp src/platform/wallpaper.cpp src/platform/wallpaper_codec.cpp src/platform/status.cpp src/platform/dialogs.cpp src/platform/identity.cpp src/platform/display_policy.cpp src/platform/window_preview.cpp src/platform/theme_library.cpp src/platform/layout_library.cpp src/platform/preset_store.cpp src/platform/provider_client.cpp src/platform/provider_codec.cpp src/platform/shell_requests.cpp src/platform/tiling.cpp)
+    src/platform/extensions.cpp src/platform/plugin_data.cpp src/platform/plugin_provider.cpp src/platform/wallpaper.cpp src/platform/wallpaper_codec.cpp src/platform/status.cpp src/platform/status_service.cpp src/platform/dialogs.cpp src/platform/identity.cpp src/platform/display_policy.cpp src/platform/window_preview.cpp src/platform/theme_library.cpp src/platform/layout_library.cpp src/platform/preset_store.cpp src/platform/provider_client.cpp src/platform/provider_codec.cpp src/platform/shell_requests.cpp src/platform/tiling.cpp)
   target_compile_definitions(aether_platform PUBLIC UNICODE _UNICODE NOMINMAX
     WIN32_LEAN_AND_MEAN WINVER=0x0A00 _WIN32_WINNT=0x0A00)
   target_link_libraries(aether_platform PUBLIC aether_core user32 gdi32 shell32
@@ -85,6 +85,13 @@ if(WIN32)
     aether_warnings(AetherIntegrationTests)
     add_test(NAME WindowsIntegration COMMAND AetherIntegrationTests)
     set_tests_properties(WindowsIntegration PROPERTIES TIMEOUT 60 RUN_SERIAL TRUE)
+  endif()
+  if(BUILD_TESTING)
+    add_executable(AetherStatusTests tests/windows_status.cpp)
+    target_link_libraries(AetherStatusTests PRIVATE aether_platform)
+    aether_warnings(AetherStatusTests)
+    add_test(NAME WindowsAsyncStatus COMMAND AetherStatusTests)
+    set_tests_properties(WindowsAsyncStatus PROPERTIES TIMEOUT 20)
   endif()
   add_executable(AetherTools WIN32 src/tools_main.cpp resources/app.rc)
   target_link_libraries(AetherTools PRIVATE aether_graphics)
@@ -239,7 +246,7 @@ if(WIN32)
     set_tests_properties(WindowsExtensionsVisibility PROPERTIES TIMEOUT 35)
     # Opt-in live taskbar acceptance. It is deliberately not an ordinary CTest.
     add_executable(AetherTaskbarRecoveryTests tests/windows_taskbar_recovery.cpp)
-    target_link_libraries(AetherTaskbarRecoveryTests PRIVATE aether_platform)
+    target_link_libraries(AetherTaskbarRecoveryTests PRIVATE aether_platform oleacc)
     add_dependencies(AetherTaskbarRecoveryTests AetherWatchdog AetherUI)
     aether_warnings(AetherTaskbarRecoveryTests)
     add_executable(AetherDesktopLauncher tools/Launch-FromDesktop.cpp)

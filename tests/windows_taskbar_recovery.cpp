@@ -4,6 +4,7 @@
 #include "platform/extensions.hpp"
 #include <tlhelp32.h>
 #include <wtsapi32.h>
+#include <oleacc.h>
 #include <iostream>
 #include <functional>
 #include <limits>
@@ -928,6 +929,14 @@ unsigned liveSceneCount(DWORD pid){
  struct Walk{WNDENUMPROC child;Observation* observation;} walk{child,&observation};
  EnumWindows([](HWND h,LPARAM data)->BOOL{auto& w=*reinterpret_cast<Walk*>(data);EnumChildWindows(h,w.child,reinterpret_cast<LPARAM>(w.observation));return TRUE;},reinterpret_cast<LPARAM>(&walk));return observation.count;
 }
+bool savedStartupHiding(bool requested){auto text=readText(configDirectory()/L"settings-v3.ini");return !text.empty()&&parseSettings(text).hideTaskbar==requested;}
+HWND ownedEditor(DWORD root){struct Query{DWORD pid;HWND found=nullptr;} query{root};EnumWindows([](HWND h,LPARAM data)->BOOL{auto& q=*reinterpret_cast<Query*>(data);DWORD owner=0;GetWindowThreadProcessId(h,&owner);if(owner==q.pid&&windowText(h)==L"Aether UI - Desktop Studio"){q.found=h;return FALSE;}return TRUE;},reinterpret_cast<LPARAM>(&query));return query.found;}
+bool editorAction(HWND editor,const wchar_t* name){
+ ComPtr<IAccessible> tree;if(FAILED(AccessibleObjectFromWindow(editor,static_cast<DWORD>(OBJID_CLIENT),IID_IAccessible,reinterpret_cast<void**>(tree.GetAddressOf()))))return false;
+ long count=0;tree->get_accChildCount(&count);
+ for(long id=1;id<=count;++id){VARIANT child{};child.vt=VT_I4;child.lVal=id;BSTR text=nullptr;tree->get_accName(child,&text);bool match=text&&std::wstring_view(text,SysStringLen(text))==name;SysFreeString(text);if(match)return tree->accDoDefaultAction(child)==S_OK;}
+ return false;
+}
 void appCase(const wchar_t* name,bool emergency,bool crash,int effects=-1){
  SafeCase test;if(!check(test.ready(),"actual App: before-state and independent outside-job sentinel acknowledged"))return;
  if(!check(test.launchApp(name,true,true,false,effects),"actual App: private-profile process reaches its Ready lifecycle"))return;
@@ -943,6 +952,7 @@ void appCase(const wchar_t* name,bool emergency,bool crash,int effects=-1){
   check(waitFor([&]{return barsRestored(*test.state);},10000),"actual App crash: watchdog restores native taskbars");
   check(helper&&WaitForSingleObject(helper.value,5000)==WAIT_OBJECT_0,"actual App crash: watchdog retires after recovery");}
  test.finish(crash?"actual App crash":emergency?"actual App emergency":"actual App normal exit");
+ if(emergency)check(savedStartupHiding(false),"explicit emergency restore turns off the saved hiding preference");
  if(effects==2)check(liveSceneCount(test.worker.pid)==0,"actual effects App: owned wallpaper windows are gone after retirement");
 }
 class SuspendedController {
@@ -977,7 +987,22 @@ void appHelperCrashCase(){
  DWORD_PTR reply=0;check(test.command(WM_NULL,&reply,500),"actual App helper death: controller remains responsive after fallback");
  bool stable=true;const auto until=GetTickCount64()+2500;
  while(GetTickCount64()<until){if(!barsRestored(*test.state))stable=false;Sleep(50);}
- check(stable,"actual App helper death: normal timers never silently re-hide restored taskbars");test.finish("actual App helper death");
+ check(stable,"actual App helper death: normal timers never silently re-hide restored taskbars");
+ check(savedStartupHiding(true),"automatic helper recovery preserves hide-on-load preference");
+ // Exercise the real post-recovery save and Resume controls through native
+ // accessibility, without injecting pointer/keyboard input into other apps.
+ ComApartment apartment;HWND editor=nullptr;
+ check(test.command(OpenEditorMessage),"recovery preferences: open only the owned App Studio");
+ if(check(waitFor([&]{editor=ownedEditor(test.worker.pid);return editor&&IsWindowVisible(editor);},8000),"recovery preferences: owned Studio appears")){
+  check(editorAction(editor,L"Behavior & recovery"),"recovery preferences: select behavior controls");
+  const bool before=parseSettings(readText(configDirectory()/L"settings-v3.ini")).clock24;
+  check(waitFor([&]{return editorAction(editor,L"24-hour clock");},3000),"recovery preferences: change an unrelated clock setting");
+  check(waitFor([&]{auto text=readText(configDirectory()/L"settings-v3.ini");auto value=parseSettings(text);return !text.empty()&&value.hideTaskbar&&value.clock24!=before;},3000),"unrelated settings save cannot erase recovered startup preference");
+  check(editorAction(editor,L"Resume taskbar hiding"),"recovery preferences: explicitly resume hiding");
+  check(test.observeAppHelper(),"explicit Resume publishes a fresh verified watchdog");
+  check(waitFor([&]{return barsHidden(*test.state);},5000),"explicit Resume hides all native taskbars again");
+ }
+ test.finish("actual App helper death and explicit resume");
 }
 void appControllerHangCase(){
  SafeCase test;if(!appAdmission(test,L"ui-hang","actual App UI hang"))return;auto helper=test.helper();
@@ -994,7 +1019,9 @@ void appControllerHangCase(){
  DWORD_PTR reply=0;check(waitFor([&]{return test.command(WM_NULL,&reply,300);},3000),"actual App resume: controller responds again");
  bool stable=true;const auto until=GetTickCount64()+2500;
  while(GetTickCount64()<until){if(!barsRestored(*test.state))stable=false;Sleep(50);}
- check(stable,"actual App resume: queued timers and reconciliation never re-hide the restored taskbar");test.finish("actual App UI hang and resume");
+ check(stable,"actual App resume: queued timers and reconciliation never re-hide the restored taskbar");
+ check(savedStartupHiding(true),"automatic UI-hang recovery preserves hide-on-load preference");
+ test.finish("actual App UI hang and resume");
 }
 void describeSyntheticSession(const SafeCase& test,const Handle& expectedHelper,const char* stage,ULONGLONG started){
  const auto* before=test.state;if(!before)return;

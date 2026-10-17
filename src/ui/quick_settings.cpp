@@ -43,8 +43,8 @@ void QuickSettings::volumeAt(float x){
 }
 void QuickSettings::click(float x,float y){
  RECT r{};GetClientRect(hwnd_,&r);float width=r.right/scale();
- if(y>=100&&y<143&&x<65){win::toggleMute();app_.refreshStatus();invalidate();return;}
- if(y>=140&&y<184&&app_.status().volume>=0){volumeAt(x);win::setVolume(previewVolume_/100.f);previewVolume_=-1;app_.refreshStatus();invalidate();return;}
+ if(y>=100&&y<143&&x<65){app_.requestMute();app_.refreshStatus();invalidate();return;}
+ if(y>=140&&y<184&&app_.status().volume>=0){volumeAt(x);app_.requestVolume(previewVolume_);previewVolume_=-1;app_.refreshStatus();invalidate();return;}
  if(y>=209&&y<277){hide();app_.launchTarget(hwnd_,x<width/2?L"ms-settings:network-status":L"ms-settings:display");}
  if(y>=290&&y<337){hide();if(x<width/2)app_.launchTarget(hwnd_,L"ms-settings:sound");else app_.openEditor();}
 }
@@ -63,7 +63,7 @@ LRESULT QuickSettings::event(UINT m,WPARAM w,LPARAM l,bool& handled){
   if(focused_==1&&app_.status().volume>=0){if(w==VK_LEFT||w==VK_DOWN){adjustVolume(std::max(0,app_.status().volume-5));return 0;}if(w==VK_RIGHT||w==VK_UP){adjustVolume(std::min(100,app_.status().volume+5));return 0;}if(w==VK_HOME||w==VK_END){adjustVolume(w==VK_HOME?0:100);return 0;}}break;
  case WM_LBUTTONDOWN:if(GET_Y_LPARAM(l)/scale()>=140&&GET_Y_LPARAM(l)/scale()<184&&app_.status().volume>=0){draggingVolume_=true;SetCapture(hwnd_);volumeAt(GET_X_LPARAM(l)/scale());return 0;}break;
  case WM_MOUSEMOVE:if(draggingVolume_){volumeAt(GET_X_LPARAM(l)/scale());return 0;}break;
- case WM_LBUTTONUP:if(draggingVolume_){volumeAt(GET_X_LPARAM(l)/scale());int volume=previewVolume_;draggingVolume_=false;ReleaseCapture();win::setVolume(volume/100.f);previewVolume_=-1;app_.refreshStatus();invalidate();return 0;}break;
+ case WM_LBUTTONUP:if(draggingVolume_){volumeAt(GET_X_LPARAM(l)/scale());int volume=previewVolume_;draggingVolume_=false;ReleaseCapture();app_.requestVolume(volume);previewVolume_=-1;app_.refreshStatus();invalidate();return 0;}break;
  case WM_CAPTURECHANGED:draggingVolume_=false;previewVolume_=-1;invalidate();return 0;
  default:break;
  }
@@ -75,8 +75,8 @@ D2D1_RECT_F QuickSettings::controlRect(int index) const{
  RECT r{};GetClientRect(hwnd_,&r);const float width=r.right/scale();switch(index){case 0:return box(25,103,40,39);case 1:return box(35,142,width-70,36);case 2:return box(20,209,(width-52)/2,67);case 3:return box((width+12)/2,209,(width-52)/2,67);case 4:return box(20,294,(width-40)/2,40);default:return box(width/2,294,(width-40)/2,40);}
 }
 void QuickSettings::focusControl(int index){focused_=index;SetFocus(hwnd_);invalidate();accessibleSnapshot();}
-void QuickSettings::adjustVolume(int value){if(app_.status().volume<0)return;win::setVolume(std::clamp(value,0,100)/100.f);previewVolume_=-1;app_.refreshStatus();invalidate();accessibleSnapshot();}
-void QuickSettings::invoke(int index){switch(index){case 0:if(app_.status().volume>=0){win::toggleMute();app_.refreshStatus();invalidate();accessibleSnapshot();}break;case 1:focusControl(1);break;case 2:hide();app_.launchTarget(hwnd_,L"ms-settings:network-status");break;case 3:hide();app_.launchTarget(hwnd_,L"ms-settings:display");break;case 4:hide();app_.launchTarget(hwnd_,L"ms-settings:sound");break;case 5:hide();app_.openEditor();break;default:break;}}
+void QuickSettings::adjustVolume(int value){if(app_.status().volume<0)return;app_.requestVolume(std::clamp(value,0,100));previewVolume_=-1;app_.refreshStatus();invalidate();accessibleSnapshot();}
+void QuickSettings::invoke(int index){switch(index){case 0:if(app_.status().volume>=0){app_.requestMute();app_.refreshStatus();invalidate();accessibleSnapshot();}break;case 1:focusControl(1);break;case 2:hide();app_.launchTarget(hwnd_,L"ms-settings:network-status");break;case 3:hide();app_.launchTarget(hwnd_,L"ms-settings:display");break;case 4:hide();app_.launchTarget(hwnd_,L"ms-settings:sound");break;case 5:hide();app_.openEditor();break;default:break;}}
 void QuickSettings::accessibleSnapshot(){
  if(!accessibility_)return;std::vector<AccessibleNode> nodes;const wchar_t* names[]={L"Mute output",L"Output volume",L"Network settings",L"Display settings",L"Sound settings",L"Desktop Studio"};
  for(int i=0;i<6;++i){long state=STATE_SYSTEM_FOCUSABLE;if(i<2&&app_.status().volume<0)state|=STATE_SYSTEM_UNAVAILABLE;if(i==0&&app_.status().muted)state|=STATE_SYSTEM_CHECKED;auto n=accessibleNode(hwnd_,i+1,names[i],i==0?ROLE_SYSTEM_CHECKBUTTON:i==1?ROLE_SYSTEM_SLIDER:ROLE_SYSTEM_PUSHBUTTON,state,controlRect(i));n.focus=[this,i]{focusControl(i);};n.invoke=[this,i]{invoke(i);};if(i==0)n.defaultAction=L"Toggle";if(i==1){n.value=app_.status().volume<0?L"Unavailable":std::to_wstring(app_.status().volume)+L"%";n.defaultAction=L"Focus";n.description=L"Use arrow keys to change by five percent; Home sets zero and End sets one hundred.";n.setValue=[this](const std::wstring& text){try{std::size_t used=0;int value=std::stoi(text,&used);if(used<text.size()&&text[used]==L'%')++used;if(used!=text.size()||value<0||value>100)return false;adjustVolume(value);return true;}catch(...){return false;}};}nodes.push_back(std::move(n));}

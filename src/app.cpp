@@ -23,7 +23,7 @@ constexpr UINT StatusTimer=1,ReconcileTimer=2,EventsTimer=3,RecoveryTimer=4,Work
 constexpr int LauncherHotkey=1,EditorHotkey=2,RecoveryHotkey=3;
 constexpr UINT WindowsTapMessage=WM_APP+42,AppearanceApplyMessage=WM_APP+156;
 }
-App::App(win::ProviderProcessOptions providers,win::ProviderProcessOptions wallpaperProviders,win::ProviderProcessOptions pluginProviders):icons_(providers),catalog_(providers),shell_(providers),wallpaper_(wallpaperProviders),pluginProviders_(std::move(pluginProviders)){config_=win::loadConfig(firstRun_);icons_.setPack(config_.iconPack);appearance_=std::make_unique<win::AppearanceBridge>();}
+App::App(win::ProviderProcessOptions providers,win::ProviderProcessOptions wallpaperProviders,win::ProviderProcessOptions pluginProviders):icons_(providers),catalog_(providers),shell_(providers),wallpaper_(wallpaperProviders),statusService_(providers),pluginProviders_(std::move(pluginProviders)){config_=win::loadConfig(firstRun_);taskbarStartupPreference_=config_.hideTaskbar;icons_.setPack(config_.iconPack);appearance_=std::make_unique<win::AppearanceBridge>();}
 App::~App(){shutdown();}
 int App::run(){
  // Seal the physical desktop before the first Aether window or reservation.
@@ -45,7 +45,7 @@ int App::run(){
  for(int i=0;i<9;++i)if(!RegisterHotKey(controller_,50+i,MOD_CONTROL|MOD_ALT|MOD_SHIFT|MOD_NOREPEAT,'1'+i))tilingShortcutNotice_+=L"A custom zone shortcut is already assigned. ";
  if(!tilingShortcutNotice_.empty())win::log(win::utf8(tilingShortcutNotice_));
  if(!WTSRegisterSessionNotification(controller_,NOTIFY_FOR_THIS_SESSION))win::log("Session notifications unavailable.");
- icons_.start(controller_);catalog_.start(controller_);shell_.start(controller_);wallpaper_.start(controller_);refreshPinIdentities();
+ icons_.start(controller_);catalog_.start(controller_);shell_.start(controller_);wallpaper_.start(controller_);statusService_.start(controller_);refreshPinIdentities();
  if(!events_.start(controller_))win::log("Window events unavailable; using periodic reconciliation.");
  SetPropW(controller_,L"Aether.Workspace.Notifications",reinterpret_cast<HANDLE>(static_cast<ULONG_PTR>(workspaces_.watch(controller_))));registerTray();updateStatus();refreshWindows();
  // A fresh recovery generation must capture the reservation-free desktop.
@@ -88,7 +88,11 @@ int App::run(){
  }
  MSG message{};BOOL result=0;ULONGLONG progressHeartbeat=0;
  while((result=GetMessageW(&message,nullptr,0,0))>0){
+  SetPropW(controller_,L"Aether.UI.Message",reinterpret_cast<HANDLE>(static_cast<ULONG_PTR>(message.message)+1));
+  SetPropW(controller_,L"Aether.UI.WParam",reinterpret_cast<HANDLE>(message.wParam));
+  SetPropW(controller_,L"Aether.UI.Started",reinterpret_cast<HANDLE>(static_cast<ULONG_PTR>(GetTickCount64())));
   TranslateMessage(&message);DispatchMessageW(&message);
+  RemovePropW(controller_,L"Aether.UI.Message");
   // WM_TIMER has lower priority than posted shell/layout traffic. Renew only
   // after a completed main-loop dispatch, so a busy responsive queue remains
   // live while a blocked or suspended UI thread still expires normally.
@@ -110,7 +114,7 @@ void App::shutdown(){
  NOTIFYICONDATAW n{};n.cbSize=sizeof(n);n.hWnd=controller_;n.uID=1;Shell_NotifyIconW(NIM_DELETE,&n);
  markLifecycle(AppLifecyclePhase::SurfacesRemoved);
  markLifecycle(AppLifecyclePhase::StoppingWallpaper);wallpaper_.stop();extensionRuntime_.reset();
- markLifecycle(AppLifecyclePhase::StoppingShell);shell_.stop();pendingPins_.clear();tiling_.reset();
+ markLifecycle(AppLifecyclePhase::StoppingShell);statusService_.stop();shell_.stop();pendingPins_.clear();tiling_.reset();
  markLifecycle(AppLifecyclePhase::StoppingCatalog);catalog_.stop();
  markLifecycle(AppLifecyclePhase::StoppingIcons);icons_.stop();
  markLifecycle(AppLifecyclePhase::SavingDiagnostics);
@@ -297,9 +301,17 @@ void App::automaticColorsCompletion(const win::WallpaperCompletion& completion){
  if(selected==snapshot.monitors.end()||selected->path.empty()){auto pixel=colorRefBgra(snapshot.color);acceptAutomaticColors(wallpaperPalettes(config_.theme,pixel,1,1));}else{automaticPath_=selected->path;automaticWaiting_=true;updateAutomaticColors();}
 }
 void App::updateStatus(){
- if(paused_)return;if(liveWallpaper_&&!workspaceQuiesced_)updateWorkspaceWallpaper();++statusPolls_;auto next=win::readStatus(config_.clock24,extensionRuntime_&&extensionRuntime_->resourcesActive());
+ if(paused_)return;if(liveWallpaper_&&!workspaceQuiesced_)updateWorkspaceWallpaper();++statusPolls_;auto next=win::readStatus(config_.clock24,extensionRuntime_&&extensionRuntime_->resourcesActive(),false);
+ next.volume=status_.volume;next.muted=status_.muted;next.network=status_.network;statusService_.request();
  bool changed=next.clock!=status_.clock||next.volume!=status_.volume||next.muted!=status_.muted||next.network!=status_.network||next.power!=status_.power||next.battery!=status_.battery||next.resources!=status_.resources;
  status_=std::move(next);if(changed){for(auto& panel:panels_)if(panel->top())panel->invalidate();if(quick_)quick_->invalidate();if(extensionRuntime_)extensionRuntime_->update();}
+}
+void App::statusCompletion(){
+ auto result=statusService_.takeCompletion();if(!result||paused_||quitRequested_)return;
+ if(result->outcome!=win::ProviderOutcome::Ok){win::log("Status provider unavailable or timed out; cached audio/network retained without blocking the UI.");return;}
+ const auto& next=result->value;if(next.volume==status_.volume&&next.muted==status_.muted&&next.network==status_.network)return;
+ status_.volume=next.volume;status_.muted=next.muted;status_.network=next.network;
+ for(auto& panel:panels_)if(panel->top())panel->invalidate();if(quick_)quick_->invalidate();if(extensionRuntime_)extensionRuntime_->update();
 }
 void App::redraw(){
  if(paused_)return;if(running_&&!quitRequested_&&appearanceReady_){appearance_->apply(theme());appearance_->reconcile(windows_,theme());}for(auto& panel:panels_)panel->invalidate();
@@ -307,6 +319,8 @@ void App::redraw(){
 }
 void App::apply(Config next){
  next=parseSettings(serializeSettings(next));
+ // Automatic recovery changes runtime state, never the user's startup choice.
+ if(next.hideTaskbar!=config_.hideTaskbar)taskbarStartupPreference_=next.hideTaskbar;
  // Configuration-only clients and suspended/closing instances never arm a
  // native helper. A paused Apply can revoke, but cannot create, a resume token.
  const bool active=running_&&!paused_&&!quitRequested_;
@@ -323,7 +337,7 @@ void App::apply(Config next){
   if(running_&&(config_.hideTaskbar||workspaceQuiesced_||workspaceRestorePending_||taskbar_.recoveryOwnerAlive())){retireDesktop();resumeWorkspace();}
   else if(!running_)taskbar_.setEnabled(false);
  }
- try{win::saveConfig(next);}catch(const std::exception& e){
+ try{auto saved=next;saved.hideTaskbar=taskbarStartupPreference_;win::saveConfig(saved);}catch(const std::exception& e){
   taskbarSessionSuspended_=false;if(running_){retireDesktop();resumeWorkspace();}else taskbar_.setEnabled(false);
   if(controller_)KillTimer(controller_,RecoveryTimer);
   config_.hideTaskbar=false;scheduleLayout();
@@ -550,12 +564,14 @@ bool App::confirmActiveTaskbar(){
 }
 void App::updateTaskbarFailure(bool wait){
  taskbarSessionSuspended_=false;retireDesktop(wait);config_.hideTaskbar=false;
- try{win::saveConfig(config_);}catch(const std::exception& e){win::log(e.what());}
+ win::log("Taskbar hiding paused after recovery; startup preference retained="+std::to_string(taskbarStartupPreference_));
  resumeWorkspace();scheduleLayout();if(editor_){editor_->update();editor_->invalidate();}
 }
 void App::restoreNative(){
  // Withdraw reservations before the recovery owner restores its before-state.
+ taskbarStartupPreference_=false;
  updateTaskbarFailure(true);
+ try{win::saveConfig(config_);}catch(const std::exception& e){win::log(e.what());}
 }
 void App::quit(){if(controller_)PostMessageW(controller_,WM_CLOSE,0,0);}
 void App::globalMenu(HWND owner,POINT point){
@@ -586,6 +602,7 @@ LRESULT App::event(UINT m,WPARAM w,LPARAM l){
  case WM_ENDSESSION:if(w){quitRequested_=true;taskbarSessionSuspended_=false;if(interactionDepth_)EndMenu();retireDesktop();}else confirmActiveTaskbar();return 0;
  case WM_QUERYENDSESSION:confirmActiveTaskbar();return TRUE;
  case win::OpenEditorMessage:openEditor();return 0;
+ case win::StatusMessage:statusCompletion();return 0;
  case AppearanceApplyMessage:if(running_&&!paused_&&!quitRequested_){appearance_->apply(theme());appearance_->reconcile(windows_,theme());}return 0;
  case WM_APP+155:openEditor();if(editor_){if(w)editor_->openTerminal();else editor_->openIntegration();}return 0;
  case win::ApplyMessage:restoreNative();return 0;

@@ -6,7 +6,7 @@ namespace aether::win {
 using ProviderBytes=std::vector<std::uint8_t>;
 constexpr std::uint32_t ProviderMagic=0x41455448,ProviderVersion=1;
 constexpr std::size_t ProviderPayloadLimit=2*1024*1024;
-enum class ProviderOperation:std::uint32_t {Catalog=1,Icon=2,Quit=3,PinIdentity=4,WindowMetadata=5,Launch=6,Image=7,WallpaperQuery=8,WallpaperApply=9,WallpaperUndo=10,MediaQuery=11,MediaCommand=12,SeattleForecast=13,WorkspaceImage=14};
+enum class ProviderOperation:std::uint32_t {Catalog=1,Icon=2,Quit=3,PinIdentity=4,WindowMetadata=5,Launch=6,Image=7,WallpaperQuery=8,WallpaperApply=9,WallpaperUndo=10,MediaQuery=11,MediaCommand=12,SeattleForecast=13,WorkspaceImage=14,Status=15};
 enum class ProviderOutcome {Ok,Failed,Unavailable,Cancelled,Timeout,Exited,Malformed};
 struct ProviderResult {ProviderOutcome outcome=ProviderOutcome::Unavailable;ProviderBytes bytes;};
 struct ProviderWireReply {std::uint32_t status=0;ProviderBytes bytes;};
