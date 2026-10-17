@@ -19,7 +19,7 @@ void Editor::terminalSettings(Canvas& c,float y){
  for(int n=1;n<=10;++n){
   auto t=terminalDesignTheme(app_.theme(),n);float x=220+((n-1)%2)*(half+12),row=y+226+((n-1)/2)*92.f;
   auto bounds=box(x,row,half,80);c.fill(bounds,t.background,9);
-  c.ellipse(x+half*.83f,row+50,half*.26f,23,t.accent,.16f,true);
+  c.ellipse(x+half*.72f,row+50,half*.22f,23,t.accent,.16f,true);
   c.text(win::wide(TerminalDesignNames[n]),box(x+12,row+5,half-24,26),t.foreground,13,true);
   c.text(L"aether ~ $ echo hello",box(x+12,row+35,half-24,24),t.accent,11);
   if(options.terminalDesign==n)c.stroke(bounds,theme_.accent,9,2);
